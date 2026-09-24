@@ -12,9 +12,10 @@ Open `index.html` in a browser, or visit the GitHub Pages link for this reposito
 
 ## How to play
 
-- Knock your opponent's health (30) to 0, or have more health after 10 rounds. A tie goes to round 11; a tie after that is a shared win.
+- Knock your opponent's health (30) to 0, or have more health after 15 rounds. A tie goes to overtime (round 16); a tie after that is a shared win.
+- **Power rounds:** in rounds 11 to 15 (and overtime), every card played hits ×1.5, rounded up. Burns and heals over time stay the same.
 - Each round, both players secretly choose a card, press **Ready**, and after a 3-second countdown the cards battle.
-- Drag one card onto another to **merge** them into a combo. After playing a combo you're tired and can only play a single card next round.
+- Drag one card onto another to **merge** them into a combo. After playing a combo you're tired and can only play a single card next round (the board shows a Tired banner).
 - The **Hold slot** saves a card (or combo) for later. Drop a hand card on it to swap.
 - Your hand holds up to 5 cards; a combo counts as one.
 - Both players draw from one shared, shuffled deck of 30 cards (6 of each element).
