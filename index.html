@@ -292,7 +292,7 @@ body.ingame .wrap{ max-width:none; padding:0; }
   --hand-h: clamp(64px, 22dvh, 160px);
   --slot-h: clamp(84px, calc(100dvh - var(--hand-h) - 196px), 290px);
   position:fixed; inset:0; display:grid; gap:6px;
-  grid-template-columns: minmax(0,1fr) minmax(104px, 14vw);
+  grid-template-columns: minmax(0,1fr) minmax(118px, 17vw);
   grid-template-rows: auto minmax(0,1fr) auto;
   grid-template-areas: "top top" "arena right" "bottom bottom";
   padding: max(6px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
@@ -312,7 +312,29 @@ body.ingame .wrap{ max-width:none; padding:0; }
 .board .backs .back{ width:18px; height:26px; border-radius:4px; opacity:.8; }
 .board .roundtag{ white-space:nowrap; font-size:.95rem; }
 .board .opp-bar .iconbtn[data-act=fullscreen]{ margin-left:auto; }
-.board .opp-bar .backs + .roundtag, .board .opp-bar .peekstrip + .roundtag{ margin-left:auto; }
+.board .opp-bar .opphold + .roundtag{ margin-left:auto; }
+/* opponent's Hold slot in the top bar */
+.board .opphold{ display:flex; align-items:center; gap:3px; flex:none; padding:1px 5px; border:1.5px dashed rgba(240,195,72,.8); border-radius:7px; font-size:.8rem; }
+.board .opphold .back{ width:18px; height:26px; border-radius:4px; opacity:.85; display:block; background:repeating-linear-gradient(45deg, #1b2a24 0 4px, #56675f 4px 8px); }
+.board .opphold .ohempty{ width:18px; height:26px; display:block; }
+.board .opphold .peektile{ width:28px; } .board .opphold .peektile img, .board .opphold .peektile .pe{ width:26px; height:26px; border-radius:5px; font-size:.9rem; } .board .opphold .peektile small{ display:none; }
+/* history column */
+.board .historycol{ align-items:stretch; padding:6px; }
+.board .hlist{ flex:1; min-height:0; overflow-y:auto; display:flex; flex-direction:column; gap:5px; padding-right:2px; }
+.board .hempty{ font-size:.66rem; opacity:.65; text-align:center; padding:10px 2px; }
+.board .hrow{ display:grid; grid-template-columns:auto 1fr 1fr; gap:3px; align-items:start; padding:4px; border-radius:9px; background:rgba(255,255,255,.08); animation:peekIn .3s ease-out; }
+.board .hrow:first-child{ background:rgba(240,195,72,.18); box-shadow:inset 0 0 0 1px rgba(240,195,72,.5); }
+.board .hnum{ font-size:.62rem; font-weight:800; opacity:.9; padding-top:2px; }
+.board .hside{ display:flex; flex-direction:column; align-items:center; min-width:0; }
+.board .hside .peektile{ width:30px; } .board .hside .peektile img, .board .hside .peektile .pe{ width:26px; height:26px; border-radius:5px; font-size:.9rem; }
+.board .hside .peektile small{ font-size:.5rem; opacity:.75; }
+.board .hres{ display:flex; flex-wrap:wrap; justify-content:center; gap:1px 3px; font-size:.58rem; line-height:1.3; margin-top:1px; }
+.board .hres b{ font-weight:800; } .board .hres .hd{ color:#ff9b93; } .board .hres .hs{ color:#a9c1ff; } .board .hres .hh{ color:#8be0ad; } .board .hres .hn{ opacity:.5; }
+/* your Hold slot beside your hand */
+.board .me-bar .pocket{ flex:none; width:auto; padding:4px; align-self:flex-end; border-radius:12px; }
+.board .me-bar .pocket .info{ display:none; }
+.board .me-bar .pocket .slotbox .card, .board .me-bar .pocket .slotbox .empty{ height:calc(var(--hand-h) - 10px); }
+.board .me-bar .pocket .slotbox .empty{ font-size:.7rem; line-height:1.3; }
 /* buttons under the card spots */
 .board .readyrow{ display:flex; align-items:flex-start; justify-content:center; gap:clamp(10px, 3vw, 40px); margin-top:8px; max-width:none; width:100%; }
 .board .readyrow .rb{ width:calc(var(--slot-h) * .75); min-width:92px; display:flex; flex-direction:column; align-items:stretch; }
@@ -366,7 +388,7 @@ body.ingame .wrap{ max-width:none; padding:0; }
 .board .peekstrip.inbar .peektile small{ display:none; }
 .board .peekstrip .peeklabel{ font-size:.7rem; margin-bottom:3px; }
 .board .peektile{ width:40px; } .board .peektile img, .board .peektile .pe{ width:36px; height:36px; }
-.board .powerflag{ position:absolute; bottom:6px; left:50%; transform:translateX(-50%); z-index:4; font-size:.72rem; font-weight:800; padding:3px 12px; border-radius:999px; background:#f0c348; color:#1b2a24; white-space:nowrap; }
+.board .powerflag{ position:absolute; top:4px; right:8px; z-index:4; pointer-events:none; font-size:.72rem; font-weight:800; padding:3px 12px; border-radius:999px; background:#f0c348; color:#1b2a24; white-space:nowrap; }
 .board .powerflag.soon{ background:rgba(14,11,8,.7); color:#f0c348; border:1px dashed #f0c348; }
 /* your hand */
 .board .me-info{ flex:none; width:clamp(130px, 22vw, 280px); display:grid; gap:3px; align-self:center; }
@@ -387,8 +409,9 @@ body.ingame .wrap{ max-width:none; padding:0; }
 /* pop-ups over the board */
 .board .popover{ position:absolute; z-index:30; left:50%; transform:translateX(-50%); width:min(460px, 64vw); max-height:calc(100dvh - var(--hand-h) - 90px); overflow:auto;
   background:var(--panel); color:var(--ink); border-radius:16px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,.5); border:1px solid var(--line); font-size:.85rem; }
-.board .helperpop{ bottom:calc(var(--hand-h) + 26px); }
-.board .regrowbox{ top:52px; margin:0; border:2px solid var(--sup); max-height:calc(100dvh - var(--hand-h) - 70px); }
+.board .helperpop, .board .regrowbox{ left:10px; transform:none; top:50px; bottom:auto; width:min(380px, 42vw); max-height:calc(100dvh - var(--hand-h) - 72px); }
+.board .gardenchip{ position:absolute; z-index:30; left:10px; top:50px; font-family:inherit; font-weight:800; font-size:.8rem; padding:6px 12px; border-radius:999px; border:2px solid var(--sup); background:var(--panel); color:var(--ink); cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,.4); }
+.board .regrowbox{ margin:0; border:2px solid var(--sup); }
 .board .gardeninfo{ margin-top:8px; border-top:1px solid var(--line); padding-top:6px; }
 .board .overbanner{ position:absolute; z-index:25; top:48px; left:50%; transform:translateX(-50%); width:min(620px, 66vw); text-align:center; background:var(--panel); color:var(--ink); border-radius:14px; padding:6px 12px; box-shadow:0 8px 24px rgba(0,0,0,.5); animation:toastIn .3s ease-out; }
 .board .overbanner .big{ font-size:1.25rem; font-weight:800; margin:0; }
@@ -734,7 +757,7 @@ function resolve(state, moves){
   s.reshuffled = false;
   dealRound(s, s.round % 2);            // take turns being dealt the first card
   if (s.reshuffled){ ev.push('🔀 The deck ran out, so the discard pile was shuffled back in.'); F(0,'status',0,'🔀 Deck reshuffled'); F(1,'status',0,'🔀 Deck reshuffled'); }
-  s.history.push({ round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ key:played[i].key, els:played[i].els })) });
+  s.history.push({ round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ key:played[i].key, els:played[i].els })), fx });   // fx: what happened, for the history column
   s.startEvents = []; s.startFx = [];
   s.last = { round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ key:played[i].key, els:played[i].els, eff:eff[i], fromHeld:played[i].fromHeld })), events:ev, fx };
 
@@ -761,7 +784,7 @@ function viewFor(s, pi, locked, pending){
     result: !s.over ? null : s.winner === null ? 'draw' : s.winner === pi ? 'win' : 'lose',
     you: clone(you),
     opp: Object.assign(clone(opp), { hand: you.peek ? clone(opp.hand) : null, handCount: opp.hand.length, held: you.peek ? clone(opp.held) : null, hasHeld: !!opp.held, peek:false }),   // keep Meadow's peek secret
-    history: s.history.map(h => ({ round:h.round, overtime:h.overtime, you:h.cards[pi], opp:h.cards[1-pi] })),
+    history: s.history.map(h => ({ round:h.round, overtime:h.overtime, you:h.cards[pi], opp:h.cards[1-pi], fx:(h.fx || []).map(f => Object.assign({}, f, { who: f.t === pi ? 'you' : 'opp' })) })),
     startEvents: s.startEvents || [],
     discard: s.discard.slice(),
     startFx: (s.startFx || []).map(f => Object.assign({}, f, { who: f.t === pi ? 'you' : 'opp' })),
@@ -1205,9 +1228,25 @@ function playFx(q){
   });
 }
 // Sort this round's effects into "what each player did", so each side can show its own summary.
+const SELF_STATUS = /Guard|Regen|wall|power|×2|Peek|Regrow|Mirror|Cancelled|Blocked|Not tired/;
+// Compact icons for one round in the history column: what this player's card did.
+function shortSummary(fx, who){
+  const other = who === 'you' ? 'opp' : 'you', icon = l => l.split(' ').filter(t => !/^[A-Za-z!]+$/.test(t)).join('');
+  let dmg = 0, sh = 0, hp = 0; const st = [];
+  fx.forEach(f => {
+    if (f.who === who && f.kind === 'sh+') sh += f.amt;
+    else if (f.who === who && f.kind === 'hp+') hp += f.amt;
+    else if (f.who === who && f.kind === 'status' && SELF_STATUS.test(f.label)) st.push(icon(f.label));
+    else if (f.who === other && (f.kind === 'hp-' || f.kind === 'sh-')) dmg += f.amt;
+    else if (f.who === other && f.kind === 'status' && !SELF_STATUS.test(f.label) && !/reshuffled/.test(f.label)) st.push(icon(f.label));
+  });
+  const t = [];
+  if (dmg) t.push(`<b class="hd">⚔️${dmg}</b>`); if (sh) t.push(`<b class="hs">🛡️+${sh}</b>`); if (hp) t.push(`<b class="hh">💚+${hp}</b>`);
+  return (t.join('') + st.map(x => `<span>${x}</span>`).join('')) || '<span class="hn">—</span>';
+}
 function sideSummary(fx, who){
   const other = who === 'you' ? 'opp' : 'you', them = who === 'you' ? 'them' : 'you', out = [];
-  const selfStatus = /Guard|Regen|wall|power|×2|Peek|Regrow|Mirror|Cancelled|Blocked|Not tired/;
+  const selfStatus = SELF_STATUS;
   let dmg = 0, broke = 0;
   fx.forEach(f => {
     if (f.who === who && f.kind === 'sh+') out.push(`🛡️ +${f.amt} shield`);
@@ -1283,25 +1322,30 @@ function buttonsHTML(v){
   return `<div class="readyrow"><div class="rb">${oppB}</div><div class="rbgap"></div><div class="rb">${myB}</div></div>`;
 }
 
-// Right side: both Hold slots. Theirs is face down unless you're peeking with Meadow.
-function rightHTML(v){
-  const you = v.you, opp = v.opp, frozen = v.youLocked || v.reviewing || v.over;
-  const theirs = opp.held ? tileHTML(keyOf(opp.held.els)) : opp.hasHeld ? backHTML('', 'holdback') : `<div class="holdempty">Empty</div>`;
+// Right side: what happened each round, newest on top.
+function historyHTML(v){
+  const opp = v.opp;
+  const rows = v.history.slice().reverse().map(x => `<div class="hrow" title="Round ${x.round}: ${esc(opp.name)} played ${CARDS[x.opp.key].name}, you played ${CARDS[x.you.key].name}">
+      <div class="hnum">R${x.round}${isPowerRound(x.round) ? '⚡' : ''}</div>
+      <div class="hside">${tileHTML(x.opp.key, 'Them')}<div class="hres">${shortSummary(x.fx || [], 'opp')}</div></div>
+      <div class="hside">${tileHTML(x.you.key, 'You')}<div class="hres">${shortSummary(x.fx || [], 'you')}</div></div>
+    </div>`).join('');
+  return `<aside class="side right historycol"><div class="sidelabel">📜 Rounds</div><div class="hlist">${rows || '<div class="hempty">Each round will show up here.</div>'}</div></aside>`;
+}
+
+// Your Hold slot, right next to your hand.
+function pocketHTML(v){
+  const you = v.you, frozen = v.youLocked || v.reviewing || v.over;
   let mine, tip;
   const heldHere = you.held && !heldInUse();
-  if (frozen){
-    mine = you.held ? cardFace(keyOf(you.held.els), you.held.els) : `<div class="empty">Empty</div>`; tip = '';
-  } else {
+  if (frozen){ mine = you.held ? cardFace(keyOf(you.held.els), you.held.els) : `<div class="empty">👖</div>`; tip = 'Your Hold slot'; }
+  else {
     if (ui.hold && heldHere && !ui.hold.includes('H')) ui.hold = null;
     if (heldHere){ mine = itemCard(you, 'H', '', 'data-dropzone="hold"'); tip = 'Drag it to your spot, onto a hand card to merge, or into your hand. Drop a card here to swap.'; }
     else if (ui.hold){ mine = itemCard(you, ui.hold, '', 'data-dropzone="hold"'); tip = `Goes in when you press Ready${ui.unheld ? '; your old card returns to your hand' : ''}.`; }
-    else { mine = `<button class="empty dropzone" data-dropzone="hold" data-act="zone" data-zone="hold">Drop a card</button>`; tip = you.held ? (ui.unheld ? 'Your held card is back in your hand.' : 'Your held card is in use, so the slot is free.') : 'Save 1 single card for later. Free!'; }
+    else { mine = `<button class="empty dropzone" data-dropzone="hold" data-act="zone" data-zone="hold">👖<br>Hold</button>`; tip = you.held ? (ui.unheld ? 'Your held card is back in your hand.' : 'Your held card is in use, so the slot is free.') : 'Hold slot: save 1 single card for later. Free!'; }
   }
-  return `<aside class="side right">
-    <div class="sidelabel">👖 ${esc(opp.name)}</div><div class="theirhold">${theirs}</div>
-    <div class="sidegap"></div>
-    <div class="sidelabel">👖 Your Hold</div>
-    <div class="pocket" data-dropzone="${frozen ? '' : 'hold'}"><div class="slotbox">${mine}</div><div class="info">${tip}</div></div></aside>`;
+  return `<div class="pocket" data-dropzone="${frozen ? '' : 'hold'}" title="${tip}"><div class="slotbox">${mine}</div><div class="info">${tip}</div></div>`;
 }
 
 function discardHelper(you, el){
@@ -1351,10 +1395,11 @@ function renderGame(){
     ${opp.hand && !v.over
       ? `<div class="peekstrip inbar" role="status" title="🌾 Meadow: you can see their hand"><span class="peeklabel">🌾</span><div class="peekcards">${opp.hand.map(c => tileHTML(keyOf(cardEls(c)))).join('')}</div></div>`   // 🌾 Meadow: their hand flips face up
       : `<div class="backs" aria-label="${opp.handCount} cards in hand">${'<span class="back"></span>'.repeat(opp.handCount)}</div>`}
+    <div class="opphold" title="${esc(opp.name)}'s Hold slot">👖${opp.held ? tileHTML(keyOf(opp.held.els)) : opp.hasHeld ? '<span class="back"></span>' : '<span class="ohempty"></span>'}</div>
     ${document.fullscreenEnabled ? `<button class="iconbtn" data-act="fullscreen" title="Full screen" aria-label="Full screen">⛶</button>` : ''}
     <div class="roundtag ${v.overtime?'ot':''}">${label}${v.power && !v.over ? ' <span class="powertag">⚡×1.5</span>' : ''}</div>
   </header>`;
-  h += arenaHTML(v) + rightHTML(v);
+  h += arenaHTML(v) + historyHTML(v);
   // bottom: you
   const items = frozen ? [] : handItems(you);
   const count = frozen ? you.hand.length : items.length;
@@ -1362,10 +1407,12 @@ function renderGame(){
   h += `<footer class="tbar me-bar">
     <div class="me-info"><div class="who" id="nm-you">${you.name === 'You' ? 'You' : esc(you.name)}</div>${bars(you,'you')}${chips(you)}<div class="count">${hint} <b>(${count}/${HAND} cards)</b></div></div>
     <div class="hand dropzone-hand" data-dropzone="hand">${frozen ? you.hand.map(e => cardFace(e, cardEls(e))).join('') : items.map(id => itemCard(you, id, '', id.includes('+') ? '' : `data-dropzone="item" data-target="${id}"`)).join('')}</div>
-    <div class="history" aria-label="Recent rounds">${v.history.slice(-6).map(x => `<div class="hist" title="Round ${x.round}: ${esc(opp.name)} played ${CARDS[x.opp.key].name}, you played ${CARDS[x.you.key].name}"><div class="pair"><span>${CARDS[x.opp.key].icon}</span><span>${CARDS[x.you.key].icon}</span></div>R${x.round}</div>`).join('') || '<div class="hist empty">History</div>'}</div>
+    ${v.over ? '' : pocketHTML(v)}
   </footer>`;
   // pop-ups over the board
-  if (!frozen && you.regrow && v.discard.length){
+  if (!frozen && you.regrow && v.discard.length && ui.picked && !isDiscard(ui.picked)){
+    h += `<button class="gardenchip" data-act="unpick" title="Close the card info to open Garden">🌱 Garden</button>`;   // shrinks while a card's info is open
+  } else if (!frozen && you.regrow && v.discard.length){
     const uniq = [...new Set(v.discard)], full = you.hand.length >= HAND;
     h += `<div class="popover regrowbox"><b>🌱 Garden:</b> tap a card to see its combos, then drag it into your hand${full ? ' (onto a card to swap it out, since your hand is full)' : ''}.
       <div class="row" style="margin-top:6px">${uniq.map(e => cardFace(e,[e],'mini ' + (ui.picked === 'D:'+e ? 'sel' : ''),true,`data-drag="D:${e}" data-act="pickitem" data-id="D:${e}" aria-label="${EL[e].name} from the discard pile"`)).join('')}</div>
