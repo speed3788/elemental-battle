@@ -215,6 +215,23 @@ button.statusbtn{ cursor:pointer; }
 .card.tiredcard{ filter:grayscale(.75) brightness(.8); opacity:.7; }
 .card.tiredcard::before{ content:"😮‍💨"; position:absolute; top:4px; left:6px; font-size:1rem; z-index:2; filter:none; }
 @media (prefers-reduced-motion: reduce){ .arena.power{ animation:none; box-shadow:0 0 0 3px rgba(240,195,72,.7); } }
+/* Meadow peek on the board */
+.peekstrip{ margin:0 auto 10px; max-width:520px; padding:8px 10px; border-radius:14px; background:rgba(47,138,76,.85); color:#fff; box-shadow:0 0 0 2px rgba(255,255,255,.5), 0 6px 16px rgba(0,0,0,.35); animation:peekIn .25s ease-out; }
+.peeklabel{ font-weight:800; font-size:.85rem; text-align:center; margin-bottom:6px; }
+.peekcards{ display:flex; flex-wrap:wrap; gap:5px; justify-content:center; align-items:center; }
+.peektile{ display:flex; flex-direction:column; align-items:center; width:48px; }
+.peektile img, .peektile .pe{ width:44px; height:44px; border-radius:8px; object-fit:cover; box-shadow:0 2px 6px rgba(0,0,0,.35); display:grid; place-items:center; font-size:1.4rem; background:rgba(255,255,255,.2); }
+.peektile small{ font-size:.58rem; font-weight:700; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:48px; }
+.peekheld{ font-size:1rem; margin-left:6px; }
+@keyframes peekIn{ from{ opacity:0; transform:translateY(-6px); } to{ opacity:1; transform:none; } }
+/* Meadow: the opponent's locked-in card, face up */
+.peeked{ position:relative; }
+.peeked .card{ box-shadow:0 0 0 3px #5ccf8c, 0 6px 16px rgba(0,0,0,.4); }
+.peekedtag{ position:absolute; top:-10px; left:50%; transform:translateX(-50%); background:#2f8a4c; color:#fff; font-weight:800; font-size:.72rem; padding:2px 10px; border-radius:999px; white-space:nowrap; box-shadow:0 2px 6px rgba(0,0,0,.3); }
+.slot .empty small{ font-size:.7rem; opacity:.85; }
+/* Garden picker */
+.regrowbox{ margin-top:10px; padding:10px 12px; border-radius:14px; border:2px solid var(--sup); background:color-mix(in srgb, var(--sup) 10%, var(--panel)); font-size:.85rem; }
+@media (prefers-reduced-motion: reduce){ .peekstrip{ animation:none; } }
 /* drag and drop */
 [data-drag]{ touch-action:none; user-select:none; -webkit-user-select:none; }
 .ghost{ position:fixed; left:0; top:0; z-index:50; pointer-events:none; opacity:.92; box-shadow:0 12px 28px rgba(0,0,0,.35); margin:0; }
@@ -247,6 +264,167 @@ button.empty{ font-family:inherit; width:100%; cursor:pointer; }
 .what summary::-webkit-details-marker{ display:none; }
 .what summary::before{ content:"ⓘ "; }
 @media (prefers-reduced-motion: reduce){ .flip, .clash-l, .clash-r, .spark, .chunk{ animation:none; } .chunk{ display:none; } .floater{ animation:fadeOnly 1.6s forwards; } @keyframes fadeOnly{ 0%,70%{ opacity:1; } 100%{ opacity:0; } } }
+
+/* ================= UI OVERHAUL: landing page ================= */
+.howto{ margin-top:14px; }
+.howto h2{ font-size:1.2rem; margin:0 0 10px; }
+.steps{ display:grid; grid-template-columns:repeat(auto-fill, minmax(230px, 1fr)); gap:10px; }
+.step{ position:relative; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:12px 14px 12px; }
+.stepnum{ position:absolute; top:-8px; left:-6px; width:30px; height:30px; border-radius:50%; background:var(--gold); color:#1b2a24; font-weight:800; display:grid; place-items:center; box-shadow:0 2px 6px rgba(0,0,0,.25); }
+.steppic{ display:flex; align-items:center; justify-content:center; gap:5px; min-height:70px; margin-bottom:6px; padding:6px; border-radius:12px; background:color-mix(in srgb, var(--ink) 6%, var(--bg)); flex-wrap:wrap; }
+.step h3{ margin:0 0 2px; font-size:1rem; }
+.step p{ margin:0; font-size:.88rem; color:var(--muted); }
+.steppic .peektile small{ color:var(--ink); }
+.steppic .arrow, .steppic .op{ font-size:1.2rem; font-weight:800; }
+.dashspot{ width:40px; height:52px; border:2px dashed var(--muted); border-radius:8px; display:grid; place-items:center; }
+.dashspot.small{ width:40px; height:44px; font-size:1.2rem; border-color:var(--gold); }
+.fakebtn{ background:var(--gold); color:#1b2a24; font-weight:800; border-radius:999px; padding:6px 16px; }
+.cd{ font-weight:800; font-size:1.1rem; }
+.fakebars{ display:grid; gap:4px; width:110px; } .fakebars i{ display:block; height:10px; border-radius:6px; } .fakebars .h{ background:linear-gradient(90deg, var(--hp) 60%, var(--bg) 60%); } .fakebars .s{ background:linear-gradient(90deg, var(--shield) 35%, var(--bg) 35%); height:7px; }
+.howto-foot{ font-size:.85rem; color:var(--muted); margin:8px 2px 0; }
+.menugrid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:14px; }
+.menugrid .panel{ margin-top:14px; }
+
+/* ================= UI OVERHAUL: the game board ================= */
+body.ingame{ overflow:hidden; background:#120e0a; }
+body.ingame .wrap{ max-width:none; padding:0; }
+.board{
+  --hand-h: clamp(64px, 22dvh, 160px);
+  --slot-h: clamp(84px, calc(100dvh - var(--hand-h) - 196px), 290px);
+  position:fixed; inset:0; display:grid; gap:6px;
+  grid-template-columns: minmax(0,1fr) minmax(104px, 14vw);
+  grid-template-rows: auto minmax(0,1fr) auto;
+  grid-template-areas: "top top" "arena right" "bottom bottom";
+  padding: max(6px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left));
+  background:#2a1f15 center / cover no-repeat; color:#fff; font-size:14px; overflow:hidden; user-select:none; -webkit-user-select:none;
+}
+.board .tbar{ display:flex; align-items:center; gap:10px; min-width:0; background:rgba(14,11,8,.62); border-radius:14px; padding:5px 10px; backdrop-filter:blur(3px); }
+.board .opp-bar{ grid-area:top; }
+.board .me-bar{ grid-area:bottom; align-items:flex-end; padding:6px 10px; }
+.board .who{ font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:18vw; text-shadow:0 1px 2px rgba(0,0,0,.6); }
+.board .vit{ width:clamp(110px, 20vw, 260px); display:grid; gap:3px; flex:none; }
+.board .bar{ height:16px; border-radius:8px; background:rgba(255,255,255,.14); border:none; }
+.board .bar span{ line-height:16px; font-size:.7rem; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.7); padding-left:8px; }
+.board .bar.sh{ height:11px; } .board .bar.sh span{ line-height:11px; font-size:.6rem; }
+.board .chips{ display:flex; gap:4px; flex-wrap:nowrap; overflow:hidden; min-width:0; }
+.board .chip{ background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.25); color:#fff; font-size:.68rem; padding:1px 7px; white-space:nowrap; }
+.board .backs{ display:flex; gap:3px; flex:none; }
+.board .backs .back{ width:18px; height:26px; border-radius:4px; opacity:.8; }
+.board .roundtag{ white-space:nowrap; font-size:.95rem; }
+.board .opp-bar .iconbtn[data-act=fullscreen]{ margin-left:auto; }
+.board .opp-bar .backs + .roundtag, .board .opp-bar .peekstrip + .roundtag{ margin-left:auto; }
+/* buttons under the card spots */
+.board .readyrow{ display:flex; align-items:flex-start; justify-content:center; gap:clamp(10px, 3vw, 40px); margin-top:8px; max-width:none; width:100%; }
+.board .readyrow .rb{ width:calc(var(--slot-h) * .75); min-width:92px; display:flex; flex-direction:column; align-items:stretch; }
+.board .readyrow .rbgap{ width:18px; }
+.board .readyrow.endrow{ gap:12px; }
+.board .readyrow.endrow .readybtn{ width:auto; padding:9px 22px; }
+.board .powertag{ font-size:.72rem; }
+.iconbtn{ font-family:inherit; font-size:.95rem; line-height:1; width:30px; height:30px; flex:none; border-radius:50%; border:1px solid rgba(255,255,255,.4); background:rgba(255,255,255,.1); color:#fff; cursor:pointer; }
+.iconbtn:hover{ background:rgba(255,255,255,.22); }
+/* side columns */
+.board .side{ display:flex; flex-direction:column; align-items:stretch; gap:5px; min-height:0; background:rgba(14,11,8,.5); border-radius:14px; padding:8px; backdrop-filter:blur(2px); }
+.board .left{ grid-area:left; } .board .right{ grid-area:right; align-items:center; }
+.board .sidelabel{ font-size:.7rem; font-weight:700; opacity:.85; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; text-align:center; }
+.board .sidegap{ flex:1; min-height:4px; }
+.board .sidetools{ display:flex; justify-content:center; }
+.board .statusbtn{ font-size:.82rem; padding:9px 6px; text-align:center; }
+.board .arena .statusbtn.thinking, .board .statusbtn.thinking{ background:rgba(20,16,12,.55); border-color:rgba(255,255,255,.55); color:#fff; }
+.board .readybtn, .board .sidebtn{ width:100%; font-size:.95rem; padding:11px 6px; }
+.board .sidebtn.light{ color:#fff; border-color:#fff; }
+.board .tiny{ text-align:center; font-size:.66rem; color:#fff; opacity:.85; }
+.board .theirhold{ display:flex; justify-content:center; }
+.board .theirhold .peektile img, .board .theirhold .peektile .pe{ width:40px; height:40px; }
+.board .holdback{ width:40px; height:54px; min-height:0; border-radius:8px; }
+.board .holdempty{ font-size:.7rem; opacity:.6; padding:14px 0; }
+.board .pocket{ flex-direction:column; align-items:center; gap:4px; margin:0; padding:6px; border:2px dashed var(--gold); border-radius:12px; width:100%; }
+.board .pocket .slotbox{ width:auto; flex:none; }
+.board .pocket .slotbox .card, .board .pocket .slotbox .empty{ height:calc(var(--hand-h) * .92); width:auto; aspect-ratio:3/4; min-height:0; }
+.board .pocket .slotbox .empty{ background:rgba(255,255,255,.08); color:#fff; border:none; font-size:.66rem; padding:4px; }
+.board .pocket .info{ font-size:.6rem; line-height:1.25; text-align:center; opacity:.85; max-height:3.9em; overflow:hidden; }
+/* the arena */
+.board .arena{ grid-area:arena; position:relative; margin:0; padding:6px; border:2px solid rgba(200,150,12,.5); border-radius:18px; background:rgba(10,8,6,.18); box-shadow:inset 0 0 40px rgba(0,0,0,.35); display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:0; color:#fff; animation:none; }
+.board .arena.power{ border-color:#f0c348; animation:powerGlow 2.4s ease-in-out infinite; }
+.board .slotwrap{ width:100%; display:flex; justify-content:center; }
+.board .slots{ display:flex; align-items:center; justify-content:center; gap:clamp(10px, 3vw, 40px); max-width:none; margin:0; }
+.board .slot{ display:flex; flex-direction:column; align-items:center; }
+.board .slot .who{ font-size:.72rem; margin-bottom:4px; max-width:none; }
+.board .slot .empty, .board .slot .cardback, .board .slot .card, .board .slot .readycard .card, .board .slot .peeked .card{ height:var(--slot-h); width:auto; aspect-ratio:3/4; min-height:0; }
+.board .slot .empty{ background:rgba(20,16,12,.35); border:2px dashed rgba(255,255,255,.6); color:#fff; border-radius:14px; font-size:.78rem; padding:6px; display:grid; place-items:center; text-align:center; }
+.board .vs{ color:#fff; font-weight:800; text-shadow:0 1px 3px rgba(0,0,0,.8); }
+.board .tiredtag{ bottom:8px; font-size:.72rem; }
+.board .results{ inset:-4px; }
+.board .results .rgrid{ grid-template-columns:1fr minmax(70px, calc(var(--slot-h) * .6)) auto minmax(70px, calc(var(--slot-h) * .6)) 1fr; }
+.board .results.stay{ position:relative; inset:auto; max-width:760px; width:100%; }
+.board .countdown{ border-radius:16px; }
+.board .countdown span{ font-size:min(6rem, 22dvh); }
+.board .peekstrip.inbar{ position:static; transform:none; margin:0; padding:2px 8px 2px 6px; display:flex; align-items:center; gap:5px; max-width:none; flex:none; animation:peekIn .25s ease-out; }
+.board .peekstrip.inbar .peeklabel{ margin:0; font-size:.9rem; }
+.board .peekstrip.inbar .peekcards{ flex-wrap:nowrap; gap:3px; }
+.board .peekstrip.inbar .peektile{ width:28px; }
+.board .peekstrip.inbar .peektile img, .board .peekstrip.inbar .peektile .pe{ width:26px; height:26px; border-radius:5px; font-size:.9rem; }
+.board .peekstrip.inbar .peektile small{ display:none; }
+.board .peekstrip .peeklabel{ font-size:.7rem; margin-bottom:3px; }
+.board .peektile{ width:40px; } .board .peektile img, .board .peektile .pe{ width:36px; height:36px; }
+.board .powerflag{ position:absolute; bottom:6px; left:50%; transform:translateX(-50%); z-index:4; font-size:.72rem; font-weight:800; padding:3px 12px; border-radius:999px; background:#f0c348; color:#1b2a24; white-space:nowrap; }
+.board .powerflag.soon{ background:rgba(14,11,8,.7); color:#f0c348; border:1px dashed #f0c348; }
+/* your hand */
+.board .me-info{ flex:none; width:clamp(130px, 22vw, 280px); display:grid; gap:3px; align-self:center; }
+.board .me-info .count{ font-size:.66rem; opacity:.9; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.board .hand{ display:flex; flex:1; min-width:0; gap:clamp(4px, 1vw, 10px); justify-content:center; align-items:flex-end; min-height:var(--hand-h); padding:2px; border-radius:12px; grid-template-columns:none; }
+.board .hand .card{ height:var(--hand-h); width:auto; aspect-ratio:3/4; min-height:0; flex:none; }
+.board .hand .card.sel{ transform:translateY(-8px); }
+.board .history{ flex:none; display:flex; gap:4px; max-width:20vw; overflow-x:auto; border:none; margin:0; padding:0; align-self:center; }
+.board .hist{ color:#fff; font-size:.6rem; min-width:30px; }
+.board .hist .pair{ font-size:.9rem; padding:2px 3px; }
+.board .hist.empty{ opacity:.5; font-size:.65rem; padding:6px; }
+/* cards shrink gracefully */
+.board .card.art-card .band{ padding:8px 3px 5px; }
+.board .card.art-card .nm{ font-size:clamp(.58rem, 1.9dvh, .9rem); }
+.board .card .ty{ font-size:clamp(.5rem, 1.5dvh, .66rem); padding:0 5px; }
+.board .hand .card .tyl, .board .pocket .card .tyl{ display:none; }
+.board .card .split{ width:18px; height:18px; font-size:.65rem; }
+/* pop-ups over the board */
+.board .popover{ position:absolute; z-index:30; left:50%; transform:translateX(-50%); width:min(460px, 64vw); max-height:calc(100dvh - var(--hand-h) - 90px); overflow:auto;
+  background:var(--panel); color:var(--ink); border-radius:16px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,.5); border:1px solid var(--line); font-size:.85rem; }
+.board .helperpop{ bottom:calc(var(--hand-h) + 26px); }
+.board .regrowbox{ top:52px; margin:0; border:2px solid var(--sup); max-height:calc(100dvh - var(--hand-h) - 70px); }
+.board .gardeninfo{ margin-top:8px; border-top:1px solid var(--line); padding-top:6px; }
+.board .overbanner{ position:absolute; z-index:25; top:48px; left:50%; transform:translateX(-50%); width:min(620px, 66vw); text-align:center; background:var(--panel); color:var(--ink); border-radius:14px; padding:6px 12px; box-shadow:0 8px 24px rgba(0,0,0,.5); animation:toastIn .3s ease-out; }
+.board .overbanner .big{ font-size:1.25rem; font-weight:800; margin:0; }
+.board .overbanner p{ margin:2px 0 0; font-size:.75rem; color:var(--muted); }
+.board .arena.ended .results.stay{ margin-top:clamp(40px, 16dvh, 90px); }
+
+.board .popover .preview{ margin:0; padding:8px; min-height:0; }
+.board .popover .preview .pic{ font-size:1.6rem; }
+.board .popover .acts{ margin-top:8px; }
+.board .popover .acts .btn{ padding:8px 14px; font-size:.85rem; }
+.board .popover .helper{ margin-top:8px; }
+.board .popover .opt{ padding:6px 8px; }
+.is-dragging .board .popover, .is-dragging .board .toast{ visibility:hidden; }
+.board .toast{ position:absolute; z-index:40; top:52px; left:50%; transform:translateX(-50%); width:max-content; max-width:min(560px, 62vw); margin:0; padding:6px 12px; font-size:.8rem; background:#fff3d6; color:#1b2a24; box-shadow:0 6px 20px rgba(0,0,0,.4); animation:toastIn .2s ease-out; }
+@keyframes toastIn{ from{ opacity:0; transform:translate(-50%,-6px); } to{ opacity:1; transform:translate(-50%,0); } }
+.board .floater{ z-index:60; }
+/* upright phones: ask to rotate */
+.board .rotate{ display:none; }
+@media (orientation: portrait) and (max-width: 900px){
+  .board .rotate{ display:grid; place-items:center; position:fixed; inset:0; z-index:200; background:#120e0a; color:#fff; text-align:center; padding:24px; }
+  .rotbox b{ font-size:1.2rem; display:block; margin-top:10px; } .rotbox p{ opacity:.8; }
+  .rotic{ font-size:4rem; animation:rotHint 2s ease-in-out infinite; }
+  @keyframes rotHint{ 0%,30%{ transform:rotate(0); } 60%,100%{ transform:rotate(-90deg); } }
+}
+/* short landscape phones */
+@media (max-height: 430px){
+  .board{ font-size:12px; gap:4px; --hand-h: clamp(58px, 21dvh, 100px); --slot-h: clamp(80px, calc(100dvh - var(--hand-h) - 118px), 220px); }
+  .board .tbar{ padding:3px 8px; gap:7px; }
+  .board .me-info .chips{ display:none; }
+  .board .backs .back{ width:12px; height:18px; }
+  .board .pocket .info{ display:none; }
+  .board .side{ padding:5px; }
+  .board .statusbtn{ padding:6px 4px; font-size:.72rem; }
+  .board .readybtn, .board .sidebtn{ padding:8px 4px; font-size:.82rem; }
+}
+@media (prefers-reduced-motion: reduce){ .rotic{ animation:none; } }
 </style>
 </head>
 <body>
@@ -268,25 +446,25 @@ const EL = {
 };
 const CARDS = {
   fire:{name:'Fire',icon:'🔥',type:'damage',dmg:5},
-  wind:{name:'Wind',icon:'🌬️',type:'damage',dmg:3,pierce:'all'},
+  wind:{name:'Wind',icon:'🌬️',type:'damage',dmg:3,pierce:'all',tire:true},
   earth:{name:'Earth',icon:'⛰️',type:'defense',shield:5},
-  water:{name:'Water',icon:'💧',type:'support',heal:5},
+  water:{name:'Water',icon:'💧',type:'support',heal:5,cure:true},
   wood:{name:'Wood',icon:'🌳',type:'support',boost:4},
   'fire+water':{name:'Steam',icon:'♨️',type:'damage',dmg:10},
-  'fire+wind':{name:'Firewhirl',icon:'☄️',type:'damage',dmg:9,pierce:'half',dot:{amt:2,rounds:2,label:'Burn',icon:'🔥'}},
+  'fire+wind':{name:'Firewhirl',icon:'☄️',type:'damage',dmg:7,pierce:'half',dot:{amt:1,rounds:2,label:'Burn',icon:'🔥'}},
   'wood+wind':{name:'Leaf Storm',icon:'🍃',type:'damage',dmg:7,pierce:'all',dot:{amt:1,rounds:3,label:'Cut',icon:'🍃'}},
-  'wood+earth':{name:'Root Quake',icon:'🌲',type:'damage',dmg:8,crack:4},
-  'earth+water':{name:'Mudslide',icon:'🟤',type:'damage',dmg:8,weaken:2},
+  'wood+earth':{name:'Root Quake',icon:'🌲',type:'damage',dmg:8,crack:4,tire:true},
+  'earth+water':{name:'Mudslide',icon:'🟤',type:'damage',dmg:8,tire:true},
   'earth+earth':{name:'Mountain',icon:'🏔️',type:'defense',shield:8,sot:{amt:2,rounds:3}},
-  'wood+wood':{name:'Great Tree',icon:'🌳',type:'defense',shield:8,hot:{amt:1,rounds:3}},
+  'wood+wood':{name:'Great Tree',icon:'🌳',type:'defense',shield:8,hot:{amt:2,rounds:3},cure:true},
   'fire+fire':{name:'Inferno',icon:'☀️',type:'defense',shield:6,dot:{amt:1,rounds:3,label:'Burn',icon:'🔥'}},
-  'wind+wind':{name:'Tornado',icon:'🌪️',type:'defense',block:true},
+  'wind+wind':{name:'Tornado',icon:'🌪️',type:'defense',block:true,tire:true},
   'water+water':{name:'Tidal Wave',icon:'🌊',type:'defense',shield:8,wash:true},
-  'wood+fire':{name:'Campfire',icon:'🏕️',type:'support',hot:{amt:2,rounds:3}},
+  'wood+fire':{name:'Campfire',icon:'🏕️',type:'support',hot:{amt:3,rounds:3},cure:true},
   'fire+earth':{name:'Forge',icon:'🔨',type:'support',forge:true},
   'earth+wind':{name:'Meadow',icon:'🌾',type:'support',peek:true},
   'wind+water':{name:'Rain',icon:'🌧️',type:'support',mirror:true},
-  'wood+water':{name:'Garden',icon:'🌱',type:'support',regrow:true,hot:{amt:1,rounds:3}}
+  'wood+water':{name:'Garden',icon:'🌱',type:'support',regrow:true,hot:{amt:2,rounds:3},cure:true}
 };
 const TYPE = { damage:{label:'Damage',icon:'⚔️'}, defense:{label:'Defense',icon:'🛡️'}, support:{label:'Support',icon:'💚'} };
 const pairKey = (a,b) => ELS.indexOf(a) <= ELS.indexOf(b) ? a+'+'+b : b+'+'+a;
@@ -311,9 +489,11 @@ function describe(d){
   if (d.wash) p.push('washes away their boosts');
   if (d.boost) p.push(`your next damage card +${d.boost}`);
   if (d.forge) p.push("your next card's numbers ×2");
-  if (d.peek) p.push("see their hand next round");
+  if (d.peek) p.push("free action: drop it in your card spot to see their hand and the card they lock in this round, then still play a card");
   if (d.mirror) p.push("copy their card this round");
-  if (d.regrow) p.push("bring back a used card");
+  if (d.regrow) p.push("take any card from the discard pile");
+  if (d.tire) p.push("makes them Tired (single cards only next round)");
+  if (d.cure) p.push("blocks Tired this round");
   const s = p.join(', ');
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -366,6 +546,7 @@ function validMove(p, mv){
   if (useHeld && !p.held) return false;
   const playEls = (useHeld ? p.held.els.length : 0) + c.reduce((t,i) => t + cardEls(p.hand[i]).length, 0);
   if (playEls < 1 || playEls > 2 || (playEls === 2 && p.tired)) return false;
+  if (moveInfo(p, mv).key === MEADOW) return false;          // Meadow is a free action, not a card you play
   let heldGone = useHeld, returns = 0;
   for (const m of (mv.merges || [])){                              // merges first, so a merged held card isn't mistaken for a swap
     if (!Array.isArray(m) || m.length !== 2) return false;
@@ -379,7 +560,7 @@ function validMove(p, mv){
     const h = mv.hold.cards, hHeld = !!mv.hold.useHeld;
     if (!Array.isArray(h) || !h.every(take)) return false;
     const hEls = (hHeld ? (p.held ? p.held.els.length : 9) : 0) + h.reduce((t,i) => t + cardEls(p.hand[i]).length, 0);
-    if (hEls < 1 || hEls > 2) return false;
+    if (hEls !== 1) return false;               // the Hold slot only fits one single card
     if (hHeld){ if (heldGone || !p.held || h.length !== 1) return false; heldGone = true; }
     else if (p.held && !heldGone){ returns++; heldGone = true; }       // swap: the old held card goes back to your hand
   }
@@ -391,18 +572,47 @@ function moveInfo(p, mv){
   const key = keyOf(els); return { els, key, def:CARDS[key], fromHeld:!!mv.useHeld };
 }
 // Garden: take any card from the shared discard pile into your hand.
-function applyRegrow(s, pi, el){
+function applyRegrow(s, pi, el, swapIdx){
   const p = s.players[pi]; if (p.regrow < 1) return false;
   const i = s.discard.indexOf(el); if (i < 0) return false;
-  s.discard.splice(i,1); p.hand.push(el); p.regrow--; return true;
+  const full = p.hand.length >= HAND, swap = Number.isInteger(swapIdx) && swapIdx >= 0 && swapIdx < p.hand.length;
+  if (full && !swap) return false;             // full hand: you must pick a card to throw away
+  s.discard.splice(i,1);
+  if (swap){ const out = p.hand.splice(swapIdx,1)[0]; s.discard.push(...cardEls(out)); }
+  p.hand.push(el); p.regrow--; return true;
+}
+const MEADOW = 'earth+wind';
+// 🌾 Meadow as a free action: spend Earth + Wind (two hand cards, a kept Meadow combo, or the held card + a hand card)
+// to see the other player's hand and the card they lock in THIS round. You still play a card.
+function applyPeek(s, pi, srcs){
+  const p = s.players[pi];
+  if (p.peek || p.tired || !Array.isArray(srcs) || !srcs.length || srcs.length > 2) return false;
+  if (new Set(srcs.map(String)).size !== srcs.length) return false;
+  const els = [];
+  for (const x of srcs){
+    if (x === 'H'){ if (!p.held || p.held.els.length !== 1) return false; els.push(...p.held.els); }
+    else if (Number.isInteger(x) && x >= 0 && x < p.hand.length) els.push(...cardEls(p.hand[x]));
+    else return false;
+  }
+  if (els.length !== 2 || keyOf(els) !== MEADOW) return false;
+  if (srcs.includes('H')) p.held = null;
+  srcs.filter(x => x !== 'H').sort((a,b) => b-a).forEach(i => p.hand.splice(i,1));
+  s.discard.push(...els); p.peek = true;
+  return true;
+}
+// Where the computer could find a Meadow in its hand (not using its held card).
+function findMeadow(p){
+  const k = p.hand.indexOf(MEADOW); if (k >= 0) return [k];
+  const e = p.hand.indexOf('earth'), w = p.hand.indexOf('wind');
+  return e >= 0 && w >= 0 ? [e, w] : null;
 }
 function allMoves(p){
-  const out = []; p.hand.forEach((c,i) => { if (!(p.tired && cardEls(c).length === 2)) out.push({cards:[i]}); });
+  const out = []; p.hand.forEach((c,i) => { if (!(p.tired && cardEls(c).length === 2) && c !== MEADOW) out.push({cards:[i]}); });
   if (p.held && !(p.tired && p.held.els.length === 2)) out.push({ cards:[], useHeld:true });
   if (!p.tired){ const seen = new Set();
     const single = i => !p.hand[i].includes('+');
-    for (let i=0;i<p.hand.length;i++) for (let j=i+1;j<p.hand.length;j++){ if (!single(i) || !single(j)) continue; const k = pairKey(p.hand[i],p.hand[j]); if (!seen.has(k)){ seen.add(k); out.push({cards:[i,j]}); } }
-    if (p.held && p.held.els.length === 1){ const seenH = new Set(); p.hand.forEach((e,i) => { if (single(i) && !seenH.has(e)){ seenH.add(e); out.push({ cards:[i], useHeld:true }); } }); }
+    for (let i=0;i<p.hand.length;i++) for (let j=i+1;j<p.hand.length;j++){ if (!single(i) || !single(j)) continue; const k = pairKey(p.hand[i],p.hand[j]); if (k !== MEADOW && !seen.has(k)){ seen.add(k); out.push({cards:[i,j]}); } }
+    if (p.held && p.held.els.length === 1){ const seenH = new Set(); p.hand.forEach((e,i) => { if (single(i) && !seenH.has(e) && pairKey(e, p.held.els[0]) !== MEADOW){ seenH.add(e); out.push({ cards:[i], useHeld:true }); } }); }
   }
   return out;
 }
@@ -414,10 +624,10 @@ function addEffect(p, id, kind, amt, rounds, label, icon){
 }
 // Over-time effects tick at the start of each round, before cards are played.
 function tickEffects(s){
-  const ev = [], fx = [];
+  const ev = [], fx = [], dealt = [0,0];
   s.players.forEach((p, pi) => {
     p.effects.forEach(e => {
-      if (e.kind === 'dot'){ p.hp -= e.amt; ev.push(`${e.icon} ${e.label}: ${p.name} loses ${e.amt} health.`); fx.push({ t:pi, kind:'hp-', amt:e.amt, icon:e.icon }); }
+      if (e.kind === 'dot'){ p.hp -= e.amt; dealt[1-pi] += e.amt; ev.push(`${e.icon} ${e.label}: ${p.name} loses ${e.amt} health.`); fx.push({ t:pi, kind:'hp-', amt:e.amt, icon:e.icon }); }
       else if (e.kind === 'hot'){ const r = healWithOverflow(p, e.amt);
         if (r.healed){ ev.push(`💚 ${p.name} heals ${r.healed} over time.`); fx.push({ t:pi, kind:'hp+', amt:r.healed }); }
         if (r.shield){ ev.push(`🛡️ ${p.name}'s extra healing becomes ${r.shield} shield.`); fx.push({ t:pi, kind:'sh+', amt:r.shield }); } }
@@ -426,7 +636,12 @@ function tickEffects(s){
     });
     p.effects = p.effects.filter(e => e.left > 0);
   });
-  return { ev, fx };
+  return { ev, fx, dealt };
+}
+// Both fighters dropped to 0 in the same moment: whoever dealt more damage in that final round wins. Equal damage is a tie.
+function doubleKO(s, dealt){
+  s.doubleKO = { dealt:dealt.slice() };
+  return dealt[0] > dealt[1] ? 0 : dealt[1] > dealt[0] ? 1 : null;
 }
 function resolve(state, moves){
   const s = clone(state), P = s.players, ev = [], fx = [];
@@ -445,7 +660,7 @@ function resolve(state, moves){
   const pm = isPowerRound(s.round) ? POWER : 1;
   const val = (i,n) => Math.ceil(Math.max(0, n - mod[i].w) * mod[i].m * pm);          // numbers on the card played this round
   const valOT = (i,n) => Math.max(0, n - mod[i].w) * mod[i].m;                       // over-time amounts don't get the power boost
-  const next = [{}, {}];
+  const next = [{}, {}], dealt = [0,0], tireHit = [false,false], cured = [false,false];
   const heal = (p,n) => { const b = p.hp; p.hp = Math.min(MAX_HP, p.hp + n); return p.hp - b; };
 
   // Phase 1: defense & support
@@ -460,10 +675,12 @@ function resolve(state, moves){
     if (d.hot){ addEffect(p, eff[i]+':hot', 'hot', valOT(i,d.hot.amt), d.hot.rounds, 'Heal', '💚'); ev.push(`💚 ${p.name} will heal ${valOT(i,d.hot.amt)} each round for ${d.hot.rounds} rounds.`); F(i,'status',0,'💚 Regen'); }
     if (d.sot){ addEffect(p, eff[i]+':sot', 'sot', valOT(i,d.sot.amt), d.sot.rounds, 'Wall', '🧱'); ev.push(`🧱 ${p.name}'s wall will grow ${valOT(i,d.sot.amt)} each round for ${d.sot.rounds} rounds.`); F(i,'status',0,'🧱 Growing wall'); }
     if (d.dot){ const o = P[1-i]; addEffect(o, eff[i]+':dot', 'dot', valOT(i,d.dot.amt), d.dot.rounds, d.dot.label, d.dot.icon); ev.push(`${d.dot.icon} ${o.name} will ${d.dot.label.toLowerCase()} for ${valOT(i,d.dot.amt)} each round for ${d.dot.rounds} rounds.`); F(1-i,'status',0,`${d.dot.icon} ${d.dot.label}!`); }
+    if (d.cure) cured[i] = true;
+    if (d.tire) tireHit[1-i] = true;            // Tornado: the opponent is knocked dizzy
     if (d.block){ p.block = true; ev.push(`🌪️ ${p.name} is ready to block the next hit.`); F(i,'status',0,'🌪️ Guard up'); }
     if (d.boost){ p.boost += val(i,d.boost); ev.push(`🌳 ${p.name}'s next damage card gets +${val(i,d.boost)}.`); F(i,'status',0,`🌳 +${val(i,d.boost)} power`); }
     if (d.forge){ next[i].forge = true; ev.push(`🔨 ${p.name}'s next card will be doubled.`); F(i,'status',0,'🔨 ×2 next'); }
-    if (d.peek){ next[i].peek = true; ev.push(`🌾 ${p.name} will peek at the other hand next round.`); F(i,'status',0,'🌾 Peek'); }
+    if (d.peek){ next[i].peek = true; ev.push(`🌾 ${p.name} can see the other hand, and next round the card they lock in.`); F(i,'status',0,'🌾 Peek'); }
     if (d.regrow){ p.regrow++; ev.push(`🌱 ${p.name} can bring back a used card.`); F(i,'status',0,'🌱 Regrow'); }
   }
   for (let i=0;i<2;i++){ if (D[i] && D[i].wash){ const o = P[1-i]; if (o.boost || next[1-i].forge){ ev.push(`🌊 ${P[i].name} washes away ${o.name}'s boosts.`); F(1-i,'status',0,'🌊 Washed'); } o.boost = 0; next[1-i].forge = false; } }
@@ -474,26 +691,32 @@ function resolve(state, moves){
     const d = D[i]; if (!d || d.type !== 'damage') continue;
     const p = P[i], o = P[1-i];
     let amt = Math.ceil((Math.max(0, d.dmg - mod[i].w) + p.boost) * mod[i].m * pm); p.boost = 0;
-    if (d.crack){ const c = Math.min(o.shield, val(i,d.crack)); o.shield -= c; if (c){ ev.push(`🌲 ${d.name} cracks ${c} off ${o.name}'s shield.`); F(1-i,'sh-',c); } }
+    if (d.crack){ const c = Math.min(o.shield, val(i,d.crack)); o.shield -= c; if (c){ ev.push(`🌲 ${d.name} cracks ${c} off ${o.name}'s shield.`); F(1-i,'sh-',c); dealt[i] += c; } }
     if (d.weaken){ next[1-i].weak = d.weaken; ev.push(`🟤 ${o.name}'s next card will be ${d.weaken} weaker.`); F(1-i,'status',0,`🟤 −${d.weaken} next`); }
     const pierce = d.pierce === 'all' ? amt : d.pierce === 'half' ? Math.floor(amt/2) : 0;
-    hits.push({ by:i, t:1-i, normal:amt-pierce, pierce, src:`${p.name}'s ${d.name}`, dot: d.dot ? { id:eff[i]+':dot', amt:valOT(i,d.dot.amt), rounds:d.dot.rounds, label:d.dot.label, icon:d.dot.icon } : null });
+    hits.push({ by:i, tire:!!d.tire, t:1-i, normal:amt-pierce, pierce, src:`${p.name}'s ${d.name}`, dot: d.dot ? { id:eff[i]+':dot', amt:valOT(i,d.dot.amt), rounds:d.dot.rounds, label:d.dot.label, icon:d.dot.icon } : null });
   }
   for (const h of hits){
     const t = P[h.t];
     if (t.block){ t.block = false; ev.push(`🌪️ ${t.name} blocks ${h.src} completely!`); F(h.t,'status',0,'🌪️ Blocked!'); continue; }
+    if (h.tire) tireHit[h.t] = true;            // a hit that lands makes them Tired
     let n = h.normal; const abs = Math.min(t.shield, n); t.shield -= abs; n -= abs;
-    const hp = n + h.pierce; t.hp -= hp;
+    const hp = n + h.pierce; t.hp -= hp; dealt[h.by] += abs + hp;
     ev.push(`⚔️ ${h.src} hits ${t.name}: ${abs ? abs+' to shield, ' : ''}${hp} to health.`);
     if (abs) F(h.t,'sh-',abs); if (hp) F(h.t,'hp-',hp);
     if (h.dot){ addEffect(t, h.dot.id, 'dot', h.dot.amt, h.dot.rounds, h.dot.label, h.dot.icon); F(h.t,'status',0,`${h.dot.icon} ${h.dot.label}!`); ev.push(`${h.dot.icon} ${t.name} will ${h.dot.label.toLowerCase()} for ${h.dot.amt} each round for ${h.dot.rounds} rounds.`); }
   }
   if (!ev.length) ev.push('A quiet round. Nothing happened.');
 
+  // Tired lasts one round; a cure played this same round blocks it.
+  for (let i=0;i<2;i++){
+    if (tireHit[i] && cured[i]){ ev.push(`✨ ${P[i].name} shakes off being Tired.`); F(i,'status',0,'✨ Not tired!'); }
+    else if (tireHit[i]){ ev.push(`😮‍💨 ${P[i].name} is Tired: single cards only next round.`); F(i,'status',0,'😮‍💨 Tired!'); }
+  }
   // Cleanup
   for (let i=0;i<2;i++){
     const p = P[i];
-    p.tired = played[i].els.length === 2;
+    p.tired = tireHit[i] && !cured[i];
     p.forge = !!next[i].forge; p.weak = next[i].weak || 0; p.peek = !!next[i].peek;
     const mv = moves[i], oldHeld = p.held;
     const holdEls = mv.hold ? [...(mv.hold.useHeld ? oldHeld.els : []), ...mv.hold.cards.flatMap(ix => cardEls(p.hand[ix]))] : null;
@@ -516,7 +739,7 @@ function resolve(state, moves){
   s.last = { round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ key:played[i].key, els:played[i].els, eff:eff[i], fromHeld:played[i].fromHeld })), events:ev, fx };
 
   const dead = P.map(p => p.hp <= 0);
-  if (dead[0] || dead[1]){ s.over = true; s.reason = 'ko'; s.winner = dead[0] && dead[1] ? null : dead[0] ? 1 : 0; }
+  if (dead[0] || dead[1]){ s.over = true; s.reason = 'ko'; s.winner = dead[0] && dead[1] ? doubleKO(s, dealt) : dead[0] ? 1 : 0; }
   else if (s.round >= ROUNDS){
     if (P[0].hp !== P[1].hp){ s.over = true; s.reason = 'time'; s.winner = P[0].hp > P[1].hp ? 0 : 1; }
     else if (s.round === ROUNDS){ s.round++; s.overtime = true; }
@@ -525,24 +748,27 @@ function resolve(state, moves){
   if (!s.over){
     const tk = tickEffects(s); s.startEvents = tk.ev; s.startFx = tk.fx;
     const dd = P.map(p => p.hp <= 0);
-    if (dd[0] || dd[1]){ s.over = true; s.reason = 'ko'; s.winner = dd[0] && dd[1] ? null : dd[0] ? 1 : 0; }
+    if (dd[0] || dd[1]){ s.over = true; s.reason = 'ko'; s.winner = dd[0] && dd[1] ? doubleKO(s, tk.dealt) : dd[0] ? 1 : 0; }
   }
   return s;
 }
 
-function viewFor(s, pi, locked){
+function viewFor(s, pi, locked, pending){
   const you = s.players[pi], opp = s.players[1-pi];
   return {
     round:s.round, overtime:s.overtime, over:s.over, reason:s.reason, power:isPowerRound(s.round),
+    doubleKO: s.doubleKO ? { you:s.doubleKO.dealt[pi], opp:s.doubleKO.dealt[1-pi] } : null,
     result: !s.over ? null : s.winner === null ? 'draw' : s.winner === pi ? 'win' : 'lose',
     you: clone(you),
-    opp: Object.assign(clone(opp), { hand: you.peek ? clone(opp.hand) : null, handCount: opp.hand.length, held: you.peek ? clone(opp.held) : null, hasHeld: !!opp.held }),
+    opp: Object.assign(clone(opp), { hand: you.peek ? clone(opp.hand) : null, handCount: opp.hand.length, held: you.peek ? clone(opp.held) : null, hasHeld: !!opp.held, peek:false }),   // keep Meadow's peek secret
     history: s.history.map(h => ({ round:h.round, overtime:h.overtime, you:h.cards[pi], opp:h.cards[1-pi] })),
     startEvents: s.startEvents || [],
     discard: s.discard.slice(),
     startFx: (s.startFx || []).map(f => Object.assign({}, f, { who: f.t === pi ? 'you' : 'opp' })),
     last: s.last ? { round:s.last.round, overtime:s.last.overtime, you:s.last.cards[pi], opp:s.last.cards[1-pi], events:s.last.events, fx:(s.last.fx || []).map(f => Object.assign({}, f, { who: f.t === pi ? 'you' : 'opp' })) } : null,
-    youLocked: !!(locked && locked[pi]), oppLocked: !!(locked && locked[1-pi])
+    youLocked: !!(locked && locked[pi]), oppLocked: !!(locked && locked[1-pi]),
+    // 🌾 Meadow: once they press Ready, the peeking player sees the card they'll play
+    oppCard: (you.peek && pending && pending[1-pi]) ? (() => { const m = moveInfo(opp, pending[1-pi]); return { key:m.key, els:m.els, fromHeld:m.fromHeld }; })() : null
   };
 }
 
@@ -594,6 +820,18 @@ function hardMove(s, pi, moves){
   }
   return best;
 }
+// The computer peeked with Meadow and has seen your card: pick the best answer to it.
+function aiCounter(s, pi, theirMove, level){
+  if (level === 'easy') return aiMove(s, pi, level);
+  const moves = allMoves(s.players[pi]), noise = level === 'hard' ? 0.2 : 1.5;
+  let best = moves[0], bestScore = -Infinity;
+  for (const m of moves){
+    const mv = pi === 0 ? [m, theirMove] : [theirMove, m];
+    const sc = evaluate(resolve(s, mv), pi) + (Math.random()-0.5) * noise;
+    if (sc > bestScore){ bestScore = sc; best = m; }
+  }
+  return best;
+}
 // Decide whether the computer tucks a card into its Hold slot this round.
 function aiHold(s, pi, mv, level){
   const p = s.players[pi]; if (p.held && !mv.useHeld) return null;
@@ -640,24 +878,33 @@ function localController(mode, names, level){
     push(){
       const locked = [!!pending[0], !!pending[1]], countdown = cdEnd ? Math.max(0, cdEnd - Date.now()) : 0;
       const extra = pi => ({ countdown, reviewing, youAck:acks[pi], oppAck:acks[1-pi] });
-      showGame(Object.assign(viewFor(s, 0, locked), extra(0)));
-      if (conn && conn.open) conn.send({ type:'view', view:Object.assign(viewFor(s, 1, locked), extra(1)) });
+      showGame(Object.assign(viewFor(s, 0, locked, pending), extra(0)));
+      if (conn && conn.open) conn.send({ type:'view', view:Object.assign(viewFor(s, 1, locked, pending), extra(1)) });
     },
     submit(pi, mv){
       if (s.over || cdEnd || reviewing || pending[pi] || !validMove(s.players[pi], mv)) return;
       pending[pi] = mv;
       if (mode === 'ai' && pi === 0){
         c.push();
-        // The computer gets ready right after you do.
-        aiTimer = setTimeout(() => { if (!pending[0] || cdEnd) return; const e = aiRegrow(s,1,level); if (e) applyRegrow(s,1,e); pending[1] = aiMove(s,1,level); pending[1].hold = aiHold(s,1,pending[1],level); c.tryResolve(); }, 700);
+        if (pending[1]){ c.tryResolve(); return; }          // the computer already committed (you had Meadow)
+        // The computer gets ready right after you do. If it has Meadow, it has seen your card and answers it.
+        aiTimer = setTimeout(() => { if (!pending[0] || cdEnd) return; c.aiReady(); }, 700);
         return;
       }
       c.tryResolve();
     },
-    unready(pi){
-      if (cdEnd || !pending[pi]) return;            // once the countdown starts, nobody can back out
-      pending[pi] = null; if (mode === 'ai') clearTimeout(aiTimer); c.push();
+    unready(){ },                                   // Ready is final: nobody can take it back
+    aiReady(){
+      if (pending[1] || s.over) return;
+      const e = aiRegrow(s,1,level); if (e) applyRegrow(s,1,e, s.players[1].hand.length >= HAND ? 0 : undefined);
+      // The computer may use its own Meadow to see the card you locked in.
+      const cp = s.players[1], m = findMeadow(cp);
+      if (level !== 'easy' && pending[0] && m && !cp.tired && !cp.peek && Math.random() < 0.6) applyPeek(s, 1, m);
+      const mv = (s.players[1].peek && pending[0]) ? aiCounter(s,1,pending[0],level) : aiMove(s,1,level);
+      mv.hold = aiHold(s,1,mv,level); pending[1] = mv; c.tryResolve();
     },
+    // When you have Meadow, the computer locks in first so you can see its card.
+    aiMaybeFirst(){ if (mode === 'ai' && !reviewing && !s.over && s.players[0].peek && !pending[1]) setTimeout(() => { if (!reviewing) c.aiReady(); }, 900); },
     tryResolve(){
       if (pending[0] && pending[1] && !cdEnd){
         cdEnd = Date.now() + COUNTDOWN;
@@ -669,16 +916,21 @@ function localController(mode, names, level){
       }
       c.push();
     },
-    regrow(pi, el){ if (!pending[pi] && !cdEnd && !reviewing && applyRegrow(s, pi, el)) c.push(); },
-    ack(pi){ if (!reviewing || acks[pi]) return; acks[pi] = true; if (acks[0] && acks[1]){ reviewing = false; acks = [false,false]; } c.push(); },
+    regrow(pi, el, idx){ if (!pending[pi] && !cdEnd && !reviewing && applyRegrow(s, pi, el, idx)) c.push(); },
+    // 🌾 Meadow used as a free action. Against the computer, it locks in right away so you can see its card.
+    usePeek(pi, srcs){
+      if (reviewing || cdEnd || pending[pi] || s.over || !applyPeek(s, pi, srcs)) return;
+      if (mode === 'ai' && pi === 0 && !pending[1]){ clearTimeout(aiTimer); c.aiReady(); } else c.push();
+    },
+    ack(pi){ if (!reviewing || acks[pi]) return; acks[pi] = true; if (acks[0] && acks[1]){ reviewing = false; acks = [false,false]; c.aiMaybeFirst(); } c.push(); },
     rematch(){ clearTimeout(cdTimer); clearTimeout(aiTimer); cdEnd = 0; reviewing = false; acks = [false,false]; s = newGame(names); pending = [null,null]; resetPicks(); c.push(); },
     attach(cn){ conn = cn; },
-    move(mv){ c.submit(0, mv); }, unreadyMe(){ c.unready(0); }, ackMe(){ c.ack(0); }, doRegrow(el){ c.regrow(0, el); }
+    move(mv){ c.submit(0, mv); }, unreadyMe(){ c.unready(0); }, ackMe(){ c.ack(0); }, doRegrow(el, idx){ c.regrow(0, el, idx); }, doPeek(srcs){ c.usePeek(0, srcs); }
   };
   return c;
 }
 function guestController(conn){
-  return { mode:'guest', move(mv){ conn.send({ type:'move', move:mv }); }, unreadyMe(){ conn.send({ type:'unready' }); }, ackMe(){ conn.send({ type:'ack' }); }, doRegrow(el){ conn.send({ type:'regrow', el }); }, rematch(){ conn.send({ type:'rematch' }); } };
+  return { mode:'guest', move(mv){ conn.send({ type:'move', move:mv }); }, unreadyMe(){ conn.send({ type:'unready' }); }, ackMe(){ conn.send({ type:'ack' }); }, doRegrow(el, idx){ conn.send({ type:'regrow', el, idx }); }, doPeek(srcs){ conn.send({ type:'peek', srcs }); }, rematch(){ conn.send({ type:'rematch' }); } };
 }
 
 // ---------- networking ----------
@@ -709,7 +961,8 @@ function hostGame(){
       else if (msg.type === 'move') ctrl.submit(1, msg.move);
       else if (msg.type === 'unready') ctrl.unready(1);
       else if (msg.type === 'ack') ctrl.ack(1);
-      else if (msg.type === 'regrow') ctrl.regrow(1, msg.el);
+      else if (msg.type === 'regrow') ctrl.regrow(1, msg.el, msg.idx);
+      else if (msg.type === 'peek') ctrl.usePeek(1, msg.srcs);
       else if (msg.type === 'rematch') ctrl.rematch();
     });
     conn.on('close', () => disconnected());
@@ -748,16 +1001,15 @@ function cardFace(key, els, cls='', btn='', attrs=''){
   const bg = els.length === 1 ? EL[els[0]].color : `linear-gradient(135deg, ${EL[els[0]].color} 50%, ${EL[els[1]].color} 50%)`;
   const txt = els.length === 1 ? EL[els[0]].text : '#fff';
   const tag = btn ? 'button' : 'div';
-  const type = `<span class="ty">${TYPE[d.type].icon} ${TYPE[d.type].label}</span>`;
+  const type = `<span class="ty">${TYPE[d.type].icon}<span class="tyl"> ${TYPE[d.type].label}</span></span>`;
   if (ART[key] && !cls.includes('mini')){
-    // Full-art card: the picture fills the card, with the name laid over the bottom.
-    // Square art sits at the top; the strip below matches the art's bottom color, so it reads as one picture.
+    // Full-art card: square art at the top, the strip below matches the art's bottom color, name laid over the bottom.
     const under = EL[els[els.length-1]].color;
-    return `<${tag} class="card art-card ${cls}" style="background:${under} url(${ART[key]}) top center / 100% auto no-repeat" aria-label="${d.name}" ${attrs}>
+    return `<${tag} class="card art-card ${cls}" style="background:${under} url(${ART[key]}) top center / 100% auto no-repeat" aria-label="${d.name}" title="${d.name}: ${describe(d)}" ${attrs}>
       <span class="band"><span class="nm">${d.name}</span>${type}</span></${tag}>`;
   }
   const pic = ART[key] ? `<img class="art" src="${ART[key]}" alt="" draggable="false">` : `<span class="ic">${d.icon}</span>`;
-  return `<${tag} class="card ${cls}" style="background:${bg};color:${txt}" ${attrs}>
+  return `<${tag} class="card ${cls}" style="background:${bg};color:${txt}" title="${d.name}: ${describe(d)}" ${attrs}>
     ${pic}<span class="nm ${els.length>1||txt==='#fff'?'shade':''}">${d.name}</span>${type}</${tag}>`;
 }
 function bars(p, who){
@@ -766,51 +1018,66 @@ function bars(p, who){
   return `<div class="bar hp ${low}" id="hp-${who}" role="img" aria-label="Health ${hp} of ${MAX_HP}"><i style="width:${hp/MAX_HP*100}%"></i>${prev ? chunk(Math.max(0,prev.hp), hp, MAX_HP) : ''}<span>❤️ ${hp} / ${MAX_HP}</span></div>
     <div class="bar sh" id="sh-${who}" role="img" aria-label="Shield ${p.shield} of ${MAX_SHIELD}"><i style="width:${p.shield/MAX_SHIELD*100}%"></i>${prev ? chunk(prev.shield, p.shield, MAX_SHIELD) : ''}<span>🛡️ ${p.shield} / ${MAX_SHIELD}</span></div>`;
 }
+// Small status badges; hover or long-press shows the full meaning.
 function chips(p){
   const c = [];
-  if (p.tired) c.push('😮‍💨 Tired: single card only');
-  if (p.boost) c.push(`🌳 Next hit +${p.boost}`);
-  if (p.forge) c.push('🔨 Next card ×2');
-  if (p.weak) c.push(`🟤 Next card −${p.weak}`);
-  if (p.block) c.push('🌪️ Blocks next hit');
-  p.effects.forEach(e => c.push(`${e.icon} ${e.kind==='dot' ? e.label+' '+e.amt : e.kind==='hot' ? 'Heal '+e.amt : 'Wall +'+e.amt} per round (${e.left} left)`));
-  if (p.peek) c.push('🌾 Peeking');
-  if (p.regrow) c.push(`🌱 Regrow ×${p.regrow}`);
-  return c.length ? `<div class="chips">${c.map(t => `<span class="chip">${t}</span>`).join('')}</div>` : '';
+  if (p.tired) c.push(['😮‍💨 Tired', 'Tired: single cards only this round']);
+  if (p.boost) c.push([`🌳 +${p.boost}`, `Next damage card +${p.boost}`]);
+  if (p.forge) c.push(['🔨 ×2', "Next card's numbers are doubled"]);
+  if (p.weak) c.push([`🟤 −${p.weak}`, `Next card −${p.weak}`]);
+  if (p.block) c.push(['🌪️ Guard', 'Blocks the next hit completely']);
+  p.effects.forEach(e => c.push([`${e.kind==='dot' ? e.icon : e.kind==='hot' ? '💚' : '🧱'} ${e.kind==='sot' ? '+' : ''}${e.amt}×${e.left}`,
+    `${e.kind==='dot' ? e.label + ' ' + e.amt : e.kind==='hot' ? 'Heal ' + e.amt : 'Shield +' + e.amt} per round, ${e.left} round${e.left>1?'s':''} left`]));
+  if (p.peek) c.push(['🌾 Peeking', 'You can see their hand and locked-in card this round']);
+  if (p.regrow) c.push([`🌱 ×${p.regrow}`, 'Garden: take a card from the discard pile']);
+  return `<div class="chips">${c.map(([t, title]) => `<span class="chip" title="${title}">${t}</span>`).join('')}</div>`;
 }
-function quickRules(){
-  return `<details class="panel"><summary>How to play</summary><div class="muted" style="font-size:.92rem;margin-top:8px">
-    <p>Knock your opponent's health to 0, or have more health after 15 rounds. In the last 5 rounds (11 to 15) every card played hits ×1.5. A tie after round 15 goes to one overtime round.</p>
-    <p>Each round you both secretly play 1 card, or merge 2 cards into a combo. Tap a card during the game to see what it does and what it can combine into.</p>
-    <p>Both players draw from one shared, shuffled deck of 30 cards (6 of each element). Used cards go to a shared discard pile, which is shuffled back in when the deck runs out. Keep track of what's been played!</p>
-    <p>Healing past full health turns into shield. Shields and healing happen first, then attacks. Attacks hit your shield before your health. Burns and cuts skip the shield.</p>
-    <p>You also have a Hold slot. Tuck 1 card (or a merged combo) into it for free and play it in any later round. It holds one thing at a time.</p>
-    <p>After a combo you're tired and can only play 1 card next round. Used cards are thrown away and your hand refills to 5.</p></div></details>`;
+// A small picture tile of a card, used on the landing page and in Meadow's peek.
+function tileHTML(key, label){
+  const d = CARDS[key];
+  return `<span class="peektile" title="${d.name}">${ART[key] ? `<img src="${ART[key]}" alt="" draggable="false">` : `<span class="pe">${d.icon}</span>`}<small>${label || d.name}</small></span>`;
 }
+function howToHTML(){
+  const step = (n, title, pic, text) => `<div class="step"><div class="stepnum">${n}</div><div class="steppic">${pic}</div><h3>${title}</h3><p>${text}</p></div>`;
+  return `<section class="howto" aria-label="How to play">
+    <h2>How to play</h2>
+    <div class="steps">
+      ${step(1, 'Pick a card', `${tileHTML('fire')}${tileHTML('water')}${tileHTML('wood')}<span class="arrow">➜</span><span class="dashspot"></span>`, 'Drag a card from your hand into your spot in the middle of the board.')}
+      ${step(2, 'Merge for power', `${tileHTML('fire')}<span class="op">+</span>${tileHTML('water')}<span class="op">=</span>${tileHTML('fire+water')}`, 'Drop one card onto another to make a stronger combo.')}
+      ${step(3, 'Press Ready', `<span class="fakebtn">Ready</span><span class="cd">3 · 2 · 1 ⚔️</span>`, 'Ready locks your card in. When both players are ready, the cards battle!')}
+      ${step(4, 'Win the fight', `<span class="fakebars"><i class="h"></i><i class="s"></i></span><span class="op">⚡×1.5</span>`, 'Hits break the 🛡️ shield first, then ❤️ health. Knock them to 0, or have more health after 15 rounds. Rounds 11 to 15 hit ×1.5!')}
+      ${step(5, 'Save & peek', `<span class="dashspot small">👖</span>${tileHTML('earth+wind')}`, 'Hold 1 single card for later. 🌾 Meadow (Earth + Wind) is free: drop it in your spot to see their hand and their card.')}
+      ${step(6, 'Watch out for Tired', `${tileHTML('wind')}<span class="op">😮‍💨</span>${tileHTML('water')}`, 'Wind, Mudslide, Root Quake & Tornado make them Tired (single cards only). Water, Campfire, Garden & Great Tree block it.')}
+    </div>
+    <p class="howto-foot">Both players draw from one shared deck of 30 cards. 📱 On a phone, turn it sideways to play.</p>
+  </section>`;
+}
+
 // ---------- screens ----------
 function renderMenu(){
   $app.innerHTML = `
     <h1>Elemental Battle <span class="zh">五行</span></h1>
-    <p class="muted">Merge elements into combos, build your shield, and knock your opponent's health to zero.</p>
-    <div class="panel">
-      <h2>Your name</h2>
-      <input type="text" id="name" maxlength="20" placeholder="Your name" value="${esc(myName)}" aria-label="Your name">
-    </div>
-    <div class="panel">
-      <h2>Play the computer</h2>
-      <div class="row">
-        <button class="btn alt" data-act="ai" data-level="easy">Easy</button>
-        <button class="btn" data-act="ai" data-level="medium">Medium</button>
-        <button class="btn gold" data-act="ai" data-level="hard">Hard</button>
+    ${howToHTML()}
+    <div class="menugrid">
+      <div class="panel">
+        <h2>Your name</h2>
+        <input type="text" id="name" maxlength="20" placeholder="Your name" value="${esc(myName)}" aria-label="Your name">
       </div>
-    </div>
-    <div class="panel">
-      <h2>Play a friend online</h2>
-      <p class="muted" style="margin-top:0">One player hosts and gets a code. The other player types it in.</p>
-      <div class="row" style="margin-bottom:12px"><button class="btn" data-act="host">Host a game</button></div>
-      <div class="row"><input type="text" id="code" maxlength="5" placeholder="Game code" aria-label="Game code" style="width:150px;text-transform:uppercase;letter-spacing:.15em"><button class="btn alt" data-act="join">Join game</button></div>
-    </div>
-    ${quickRules()}`;
+      <div class="panel">
+        <h2>Play the computer</h2>
+        <div class="row">
+          <button class="btn alt" data-act="ai" data-level="easy">Easy</button>
+          <button class="btn" data-act="ai" data-level="medium">Medium</button>
+          <button class="btn gold" data-act="ai" data-level="hard">Hard</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Play a friend online</h2>
+        <p class="muted" style="margin-top:0">One player hosts and gets a code. The other player types it in.</p>
+        <div class="row" style="margin-bottom:12px"><button class="btn" data-act="host">Host a game</button></div>
+        <div class="row"><input type="text" id="code" maxlength="5" placeholder="Game code" aria-label="Game code" style="width:150px;text-transform:uppercase;letter-spacing:.15em"><button class="btn alt" data-act="join">Join game</button></div>
+      </div>
+    </div>`;
   const nm = document.getElementById('name');
   nm.addEventListener('input', () => { myName = nm.value.trim(); try { localStorage.setItem('erps-name', myName); } catch(e){} });
   document.getElementById('code').addEventListener('keydown', e => { if (e.key === 'Enter') joinGame(e.target.value); });
@@ -845,7 +1112,8 @@ function resetPicks(){ ui = { merges:[], play:null, hold:null, picked:null, msg:
 resetPicks();
 const srcOf = id => id.split('+').map(x => x === 'H' ? 'H' : +x);
 const idOf = srcs => srcs.map(String).join('+');
-const itemEls = (you, id) => srcOf(id).flatMap(x => x === 'H' ? you.held.els : cardEls(you.hand[x]));
+const isDiscard = id => id.startsWith('D:');
+const itemEls = (you, id) => isDiscard(id) ? [id.slice(2)] : srcOf(id).flatMap(x => x === 'H' ? you.held.els : cardEls(you.hand[x]));
 const itemKey = (you, id) => keyOf(itemEls(you, id));
 function handItems(you){
   const inPair = new Set(ui.merges.flat().map(String)), out = [];
@@ -873,9 +1141,9 @@ function canPlayItem(you, id){ const n = itemEls(you, id).length; return n === 1
 function heldInUse(){ return ui.unheld || (ui.play && ui.play.includes('H')) || ui.merges.some(m => m.includes('H')); }
 function slotFree(you){ return !you.held || heldInUse(); }
 function canHoldItem(you, id){
+  if (isDiscard(id)) return false;
   if (id === 'H') return !!ui.unheld;                       // put a returned held card back in the slot
-  if (id.includes('H')) return you.held && you.held.els.length === 1 && !(ui.play && ui.play.includes('H'));
-  return true;                                              // if the slot is full, the held card swaps back to your hand
+  return itemEls(you, id).length === 1;                     // single cards only; a full slot swaps its card back to your hand
 }
 function placeItem(you, id, zone){
   if (zone === 'play'){
@@ -887,11 +1155,19 @@ function placeItem(you, id, zone){
       if (!ui.unheld && !(ui.play === 'H')) return '';
       unplace('H'); if (ui.hold) ui.hold = null; ui.unheld = false; ui.picked = null; return '';
     }
-    if (!canHoldItem(you, id)) return "That can't go in the Hold slot.";
+    if (!canHoldItem(you, id)) return 'The Hold slot only fits single cards, not combos.';
     if (you.held && !heldInUse()) ui.unheld = true;         // swap: the held card comes back to your hand
     unplace(id); ui.hold = id;
   }
   ui.picked = null; return '';
+}
+const isMeadow = (you, id) => !isDiscard(id) && itemKey(you, id) === MEADOW;
+function useMeadow(you, id){
+  if (you.tired) return "You're Tired, so you can't use Meadow this round.";
+  if (you.peek) return 'You already used Meadow this round.';
+  const srcs = srcOf(id); resetPicks(); ctrl.doPeek(srcs);
+  ui.msg = '🌾 Meadow used! Their hand is face-up above. Now play your card.';
+  return null;
 }
 function buildMove(){
   const you = view.you, p = ui.play ? srcOf(ui.play) : [];
@@ -931,7 +1207,7 @@ function playFx(q){
 // Sort this round's effects into "what each player did", so each side can show its own summary.
 function sideSummary(fx, who){
   const other = who === 'you' ? 'opp' : 'you', them = who === 'you' ? 'them' : 'you', out = [];
-  const selfStatus = /Guard|Regen|wall|power|×2|Peek|Regrow|Mirror|Cancelled|Blocked/;
+  const selfStatus = /Guard|Regen|wall|power|×2|Peek|Regrow|Mirror|Cancelled|Blocked|Not tired/;
   let dmg = 0, broke = 0;
   fx.forEach(f => {
     if (f.who === who && f.kind === 'sh+') out.push(`🛡️ +${f.amt} shield`);
@@ -960,128 +1236,165 @@ function resultsHTML(v, stay){
       <div class="rside you">${list('you')}</div>
     </div></div>`;
 }
+// ---------- the game board: everything lives on one landscape table ----------
+const backHTML = (txt, cls='') => `<div class="cardback ${cls}" ${ART.back ? `style="background-image:url(${ART.back})"` : ''}>${txt}</div>`;
+
 function arenaHTML(v){
   const you = v.you, opp = v.opp;
-  const back = txt => `<div class="cardback" ${ART.back ? `style="background-image:url(${ART.back})"` : ''}>${txt}</div>`;
-  const title = v.over ? 'Final round' : `Round ${v.round}${v.overtime ? ': Overtime' : ''}${v.power ? ' <span class="powertag">⚡ ×1.5</span>' : ''}`;
-  let h = `<h2>${title}</h2>`;
+  let h = '';
+  if (!v.over && v.power) h += `<div class="powerflag">⚡ Power round: cards hit ×1.5</div>`;
+  else if (!v.over && v.round === POWER_FROM - 1) h += `<div class="powerflag soon">⚡ Power rounds start next round</div>`;
   if (!v.over){
-    const oppSlot = v.oppLocked ? back('') : `<div class="empty">Thinking…</div>`;
+    const oppSlot = v.oppLocked && v.oppCard ? `<div class="peeked">${cardFace(v.oppCard.key, v.oppCard.els, 'big')}<div class="peekedtag">🌾 Peeked!</div></div>`
+      : v.oppLocked ? backHTML('') : `<div class="empty">Thinking…${opp.hand ? '<br><small>🌾 Their card shows here when they press Ready</small>' : ''}</div>`;
     let mySlot;
     if (v.youLocked && ui.play) mySlot = `<div class="readycard">${itemCard(you, ui.play, 'big', 'disabled')}</div>`;
-    else if (v.youLocked) mySlot = back('');
+    else if (v.youLocked) mySlot = backHTML('');
     else if (ui.play) mySlot = itemCard(you, ui.play, 'big', 'data-dropzone="play"');
-    else mySlot = `<button class="empty dropzone" data-dropzone="play" data-act="zone" data-zone="play">Drag a card here to play it</button>`;
+    else mySlot = `<button class="empty dropzone" data-dropzone="play" data-act="zone" data-zone="play">Drag a card here</button>`;
     const tiredTag = (p, mine) => p.tired && !v.reviewing ? `<div class="tiredtag" role="status">😮‍💨 Tired<br><small>${mine ? 'Single cards only' : 'Single card this round'}</small></div>` : '';
-    h += `<div class="slotwrap"><div class="slots"><div class="slot"><div class="who">${esc(opp.name)}</div>${oppSlot}${tiredTag(opp, false)}</div><div class="vs">vs</div><div class="slot" data-dropzone="play"><div class="who">You</div>${mySlot}${v.youLocked ? '' : tiredTag(you, true)}</div></div>${resultsHTML(v)}</div>`;
-    const counting = v.countdown > 0;
-    if (v.reviewing){
-      const oppR = `<div class="statusbtn ${v.oppAck ? 'on' : 'thinking'}" role="status">${v.oppAck ? '✅ Done' : '📖 Reading<span class="dots"></span>'}</div>`;
-      const myR = v.youAck ? `<div class="statusbtn on">✅ Done</div><div class="tiny">Waiting for ${esc(opp.name)}…</div>` : `<button class="btn gold readybtn" data-act="continue">Continue</button>`;
-      h += `<div class="readyrow"><div>${oppR}</div><div></div><div>${myR}</div></div>`;
-    } else {
-    const oppBtn = `<div class="statusbtn ${v.oppLocked ? 'on' : 'thinking'}" role="status">${v.oppLocked ? '✅ Ready!' : '🤔 Thinking<span class="dots"></span>'}</div>`;
-    let myBtn;
-    if (counting) myBtn = `<div class="statusbtn on">✅ Ready!</div>`;
-    else if (v.youLocked) myBtn = `<button class="statusbtn on" data-act="ready" aria-pressed="true">✅ Ready!</button><div class="tiny">Tap to change your mind</div>`;
-    else { const ok = !!ui.play && validMove(you, buildMove()); myBtn = `<button class="btn gold readybtn" data-act="ready" ${ok ? '' : 'disabled'}>Ready</button>`; }
-    h += `<div class="readyrow"><div>${oppBtn}</div><div></div><div>${myBtn}</div></div>`;
-    }
-    if (counting){
+    h += `<div class="slotwrap"><div class="slots">
+        <div class="slot"><div class="who">${esc(opp.name)}</div>${oppSlot}${tiredTag(opp, false)}</div>
+        <div class="vs">vs</div>
+        <div class="slot" data-dropzone="play"><div class="who">You</div>${mySlot}${v.youLocked ? '' : tiredTag(you, true)}</div>
+      </div>${resultsHTML(v)}</div>${buttonsHTML(v)}`;
+    if (v.countdown > 0){
       const elapsed = 3000 - Math.max(0, cdEndLocal - Date.now());
       h += `<div class="countdown" aria-live="assertive">${[3,2,1].map((n,k) => `<span style="animation-delay:${k*1000 - elapsed}ms">${n}</span>`).join('')}<span class="fight" style="animation-delay:${2850 - elapsed}ms">⚔️</span></div>`;
     }
-  }
-  if (v.over) h += `<div class="slotwrap">${resultsHTML(v, true)}</div>`;   // the final blow stays on screen
-  if (!v.history.length) h += `<div class="history empty-hist" aria-hidden="true"><div class="hist"><div class="pair"><span>·</span><span>·</span></div>R1</div></div>`;
-  else {
-    h += `<div class="history" aria-label="Past rounds">${v.history.map(x => `<div class="hist" title="Round ${x.round}: ${esc(opp.name)} played ${CARDS[x.opp.key].name}, you played ${CARDS[x.you.key].name}"><div class="pair"><span>${CARDS[x.opp.key].icon}</span><span>${CARDS[x.you.key].icon}</span></div>R${x.round}</div>`).join('')}</div>`;
-  }
-  return `<div class="arena ${ART.mat ? 'has-mat' : ''} ${v.power && !v.over ? 'power' : ''}" ${ART.mat ? `style="background-image:linear-gradient(rgba(0,0,0,.18),rgba(0,0,0,.28)),url(${ART.mat})"` : ''}><div class="arena-inner">${h}</div></div>`;
+  } else h += `<div class="slotwrap">${resultsHTML(v, true)}</div>${buttonsHTML(v)}`;   // the final blow stays on the table
+  return `<main class="arena ${v.power && !v.over ? 'power' : ''} ${v.over ? 'ended' : ''}">${h}</main>`;
 }
 
-function pocketHTML(you){
-  let box, info;
-  const heldHere = you.held && !heldInUse();
-  if (ui.hold && heldHere && !ui.hold.includes('H')) ui.hold = null;
-  if (heldHere){
-    const blocked = you.tired && you.held.els.length === 2;
-    box = itemCard(you, 'H', '', 'data-dropzone="hold"');
-    info = `<b>👖 Hold slot</b>${blocked ? "You're tired, so this combo has to wait a round. " : ''}Drag it to the arena to play it, onto a hand card to merge, or into your hand. Drop a hand card here to swap.`;
-  } else if (ui.hold){
-    box = itemCard(you, ui.hold, '', 'data-dropzone="hold"');
-    info = `<b>👖 Hold slot</b>${CARDS[itemKey(you, ui.hold)].name} goes in when you press Ready${ui.unheld ? ', and your old held card goes back to your hand' : ''}. Drag it back to your hand to change your mind.`;
+// Under the card spots: the opponent's status under their card, your Ready / Continue under yours.
+function buttonsHTML(v){
+  const opp = v.opp;
+  if (v.over) return `<div class="readyrow endrow"><button class="btn gold readybtn" data-act="rematch" ${v.disconnected ? 'disabled' : ''}>Rematch</button><button class="btn alt readybtn light" data-act="menu">Menu</button></div>`;
+  let oppB, myB;
+  if (v.reviewing){
+    oppB = `<div class="statusbtn ${v.oppAck ? 'on' : 'thinking'}" role="status">${v.oppAck ? '✅ Done' : '📖 Reading<span class="dots"></span>'}</div>`;
+    myB = v.youAck ? `<div class="statusbtn on">✅ Done</div><div class="tiny">Waiting for ${esc(opp.name)}…</div>` : `<button class="btn gold readybtn" data-act="continue">Continue</button>`;
   } else {
-    box = `<button class="empty dropzone" data-dropzone="hold" data-act="zone" data-zone="hold">Drop here</button>`;
-    info = `<b>👖 Hold slot</b>${you.held ? (ui.unheld ? 'Your held card is back in your hand. Drag it here again to put it back.' : 'Your held card is being used, so the slot is free again. You can save something new.') : "Drag a card (or a merged combo) here to save it for later. It's free, and you still play a card this round."}`;
+    oppB = `<div class="statusbtn ${v.oppLocked ? 'on' : 'thinking'}" role="status">${v.oppLocked ? '✅ Ready!' : '🤔 Thinking<span class="dots"></span>'}</div>`;
+    if (v.countdown > 0) myB = `<div class="statusbtn on">✅ Ready!</div>`;
+    else if (v.youLocked) myB = `<div class="statusbtn on">✅ Ready!</div><div class="tiny">Locked in</div>`;
+    else { const ok = !!ui.play && validMove(v.you, buildMove()); myB = `<button class="btn gold readybtn" data-act="ready" ${ok ? '' : 'disabled'}>Ready</button>`; }
   }
-  return `<div class="pocket" data-dropzone="hold"><div class="slotbox">${box}</div><div class="info">${info}</div></div>`;
+  return `<div class="readyrow"><div class="rb">${oppB}</div><div class="rbgap"></div><div class="rb">${myB}</div></div>`;
+}
+
+// Right side: both Hold slots. Theirs is face down unless you're peeking with Meadow.
+function rightHTML(v){
+  const you = v.you, opp = v.opp, frozen = v.youLocked || v.reviewing || v.over;
+  const theirs = opp.held ? tileHTML(keyOf(opp.held.els)) : opp.hasHeld ? backHTML('', 'holdback') : `<div class="holdempty">Empty</div>`;
+  let mine, tip;
+  const heldHere = you.held && !heldInUse();
+  if (frozen){
+    mine = you.held ? cardFace(keyOf(you.held.els), you.held.els) : `<div class="empty">Empty</div>`; tip = '';
+  } else {
+    if (ui.hold && heldHere && !ui.hold.includes('H')) ui.hold = null;
+    if (heldHere){ mine = itemCard(you, 'H', '', 'data-dropzone="hold"'); tip = 'Drag it to your spot, onto a hand card to merge, or into your hand. Drop a card here to swap.'; }
+    else if (ui.hold){ mine = itemCard(you, ui.hold, '', 'data-dropzone="hold"'); tip = `Goes in when you press Ready${ui.unheld ? '; your old card returns to your hand' : ''}.`; }
+    else { mine = `<button class="empty dropzone" data-dropzone="hold" data-act="zone" data-zone="hold">Drop a card</button>`; tip = you.held ? (ui.unheld ? 'Your held card is back in your hand.' : 'Your held card is in use, so the slot is free.') : 'Save 1 single card for later. Free!'; }
+  }
+  return `<aside class="side right">
+    <div class="sidelabel">👖 ${esc(opp.name)}</div><div class="theirhold">${theirs}</div>
+    <div class="sidegap"></div>
+    <div class="sidelabel">👖 Your Hold</div>
+    <div class="pocket" data-dropzone="${frozen ? '' : 'hold'}"><div class="slotbox">${mine}</div><div class="info">${tip}</div></div></aside>`;
+}
+
+function discardHelper(you, el){
+  const d = CARDS[el], full = you.hand.length >= HAND, seen = new Set(), opts = [];
+  you.hand.forEach(c => { if (c.includes('+')) return; const k = pairKey(el, c); if (seen.has(k)) return; seen.add(k); opts.push({ k, c }); });
+  let h = `<div class="preview"><span class="pic">${d.icon}</span><div><div class="tt">${d.name} <span class="t-${d.type}">${TYPE[d.type].icon} ${TYPE[d.type].label}</span> <span class="muted">(discard pile)</span></div><div class="ds">${describe(d)}.</div></div></div>`;
+  h += `<div class="row acts">${full ? `<span class="muted">Hand full: drag it onto the card to throw away.</span>` : `<button class="btn" data-act="regrowtake" data-el="${el}">🌱 Take it</button><span class="muted">or drag it into your hand</span>`}<button class="btn alt" data-act="unpick">Close</button></div>`;
+  if (opts.length) h += `<div class="helper"><h3>With your hand it could merge into:</h3><div class="opts">${opts.map(o => { const c = CARDS[o.k];
+    return `<div class="opt" style="cursor:default"><span class="ic">${c.icon}</span><div><div class="tt">+ ${EL[o.c].icon} = ${c.name} <span class="t-${c.type}">${TYPE[c.type].icon}</span></div><div class="ds">${describe(c)}</div></div></div>`; }).join('')}</div></div>`;
+  return h;
 }
 function helperHTML(you){
   const id = ui.picked;
-  if (!id) return `<div class="preview"><span class="muted">Drag cards to play, hold, or merge them. Or tap a card to see what it does and what it can merge into.</span></div>`;
+  if (!id) return '';
+  if (isDiscard(id)) return discardHelper(you, id.slice(2));
   const els = itemEls(you, id), k = keyOf(els), d = CARDS[k];
-  let h = `<div class="preview"><span class="pic">${d.icon}</span><div><div class="tt">${d.name} <span class="t-${d.type}" style="font-size:.85rem">${TYPE[d.type].icon} ${TYPE[d.type].label}${els.length===2?' combo':''}</span></div><div class="ds">${describe(d)}.${els.length===2?' Playing a combo makes you tired next round.':''}</div></div></div>`;
+  let h = `<div class="preview"><span class="pic">${d.icon}</span><div><div class="tt">${d.name} <span class="t-${d.type}">${TYPE[d.type].icon} ${TYPE[d.type].label}${els.length===2?' combo':''}</span></div><div class="ds">${describe(d)}.</div></div></div>`;
   const acts = [];
-  if (canPlayItem(you, id)) acts.push(`<button class="btn" data-act="place" data-zone="play">▶ Play it</button>`);
+  if (isMeadow(you, id)) acts.push(`<button class="btn gold" data-act="place" data-zone="play" ${you.tired || you.peek ? 'disabled' : ''}>🌾 Use Meadow (free)</button>`);
+  else if (canPlayItem(you, id)) acts.push(`<button class="btn" data-act="place" data-zone="play">▶ Play it</button>`);
   if (canHoldItem(you, id)) acts.push(`<button class="btn alt" data-act="place" data-zone="hold">👖 Hold it</button>`);
-  acts.push(`<button class="btn alt" data-act="unpick">Cancel</button>`);
-  h += `<div class="row" style="margin-top:8px">${acts.join('')}</div>`;
+  acts.push(`<button class="btn alt" data-act="unpick">Close</button>`);
+  h += `<div class="row acts">${acts.join('')}</div>`;
   if (els.length === 1){
     const seen = new Set(), opts = [];
     handItems(you).concat(you.held && you.held.els.length === 1 && !id.includes('H') ? ['H'] : []).forEach(o => {
       if (o === id || o.includes('+') || itemEls(you, o).length !== 1) return;
       const e = itemEls(you, o)[0], key = pairKey(els[0], e); if (seen.has(key)) return; seen.add(key); opts.push({ o, key, e });
     });
-    if (opts.length) h += `<div class="helper"><h3>${EL[els[0]].icon} ${EL[els[0]].name} can merge with your cards into:</h3><div class="opts">${opts.map(x => { const c = CARDS[x.key];
-      return `<button class="opt" data-act="mergewith" data-id="${x.o}"><span class="ic">${c.icon}</span><div><div class="tt">+ ${EL[x.e].icon}${x.o==='H'?' (held)':''} = ${c.name} <span class="t-${c.type}" style="font-size:.8rem">${TYPE[c.type].icon} ${TYPE[c.type].label}</span></div><div class="ds">${describe(c)}</div></div></button>`; }).join('')}</div></div>`;
+    if (opts.length) h += `<div class="helper"><h3>${EL[els[0]].icon} ${EL[els[0]].name} can merge into:</h3><div class="opts">${opts.map(x => { const c = CARDS[x.key];
+      return `<button class="opt" data-act="mergewith" data-id="${x.o}"><span class="ic">${c.icon}</span><div><div class="tt">+ ${EL[x.e].icon}${x.o==='H'?' (held)':''} = ${c.name} <span class="t-${c.type}">${TYPE[c.type].icon}</span></div><div class="ds">${describe(c)}</div></div></button>`; }).join('')}</div></div>`;
   }
   return h;
 }
 
 function renderGame(){
   const v = view, you = v.you, opp = v.opp;
+  const frozen = v.youLocked || v.reviewing || v.over;
   const label = v.over ? 'Game over' : v.overtime ? `Round ${ROUNDS + 1}: Overtime!` : `Round ${v.round} of ${ROUNDS}`;
-  let h = `<div class="topbar"><span class="roundtag ${v.overtime?'ot':''}">${label}</span><button class="btn alt" data-act="menu" style="padding:6px 14px;font-size:.85rem">Leave</button></div>`;
-  if (!v.over && v.power) h += `<div class="powerbar">⚡ Power round! Every card played hits ×1.5 (burns and heals over time stay the same).</div>`;
-  else if (!v.over && v.round === POWER_FROM - 1) h += `<div class="powerbar soon">⚡ Next round the power rounds begin: every card played hits ×1.5!</div>`;
-  if (v.disconnected) h += `<div class="panel"><p class="err" style="margin:0">Your opponent disconnected. Go back to the menu to start a new game.</p></div>`;
-
-  h += `<div class="panel fighter"><div class="name" id="nm-opp"><span>${esc(opp.name)}</span><span class="lock ${v.oppLocked?'done':''}">${v.over ? '' : v.reviewing ? (v.oppAck ? '✅ Done' : '📖 Reading…') : v.oppLocked ? '✅ Ready!' : '🤔 Thinking…'}</span></div>${bars(opp,'opp')}${chips(opp)}`;
-  if (opp.hand) h += `<div class="muted" style="font-size:.8rem">🌾 Peeking at their hand:</div><div class="row">${opp.hand.map(e => cardFace(e, cardEls(e),'mini')).join('')}</div>`;
-  else h += `<div class="backs" aria-label="${opp.handCount} cards in hand">${'<span class="back"></span>'.repeat(opp.handCount)}</div>`;
-  if (opp.held) h += `<div class="opp-pocket">👖 Holding:</div><div class="row">${cardFace(keyOf(opp.held.els), opp.held.els, 'mini')}</div>`;
-  else if (opp.hasHeld) h += `<div class="opp-pocket"><span class="back"></span>👖 Holding a card</div>`;
-  h += `</div>`;
-
-  h += arenaHTML(v);
-
+  let h = `<div class="board ${v.power && !v.over ? 'power' : ''}" ${ART.mat ? `style="background-image:linear-gradient(rgba(10,8,6,.35),rgba(10,8,6,.55)),url(${ART.mat})"` : ''}>`;
+  // top: the opponent
+  h += `<header class="tbar opp-bar">
+    <button class="iconbtn" data-act="menu" title="Leave the game" aria-label="Leave the game">✕</button>
+    <div class="who" id="nm-opp">${esc(opp.name)}</div>
+    <div class="vit">${bars(opp,'opp')}</div>
+    ${chips(opp)}
+    ${opp.hand && !v.over
+      ? `<div class="peekstrip inbar" role="status" title="🌾 Meadow: you can see their hand"><span class="peeklabel">🌾</span><div class="peekcards">${opp.hand.map(c => tileHTML(keyOf(cardEls(c)))).join('')}</div></div>`   // 🌾 Meadow: their hand flips face up
+      : `<div class="backs" aria-label="${opp.handCount} cards in hand">${'<span class="back"></span>'.repeat(opp.handCount)}</div>`}
+    ${document.fullscreenEnabled ? `<button class="iconbtn" data-act="fullscreen" title="Full screen" aria-label="Full screen">⛶</button>` : ''}
+    <div class="roundtag ${v.overtime?'ot':''}">${label}${v.power && !v.over ? ' <span class="powertag">⚡×1.5</span>' : ''}</div>
+  </header>`;
+  h += arenaHTML(v) + rightHTML(v);
+  // bottom: you
+  const items = frozen ? [] : handItems(you);
+  const count = frozen ? you.hand.length : items.length;
+  const hint = v.over ? '' : v.reviewing ? 'Check the results, then press Continue.' : v.countdown > 0 ? 'Get ready…' : v.youLocked ? 'Locked in!' : you.tired ? '😮‍💨 Tired: single cards only' : 'Drop a card on another to merge';
+  h += `<footer class="tbar me-bar">
+    <div class="me-info"><div class="who" id="nm-you">${you.name === 'You' ? 'You' : esc(you.name)}</div>${bars(you,'you')}${chips(you)}<div class="count">${hint} <b>(${count}/${HAND} cards)</b></div></div>
+    <div class="hand dropzone-hand" data-dropzone="hand">${frozen ? you.hand.map(e => cardFace(e, cardEls(e))).join('') : items.map(id => itemCard(you, id, '', id.includes('+') ? '' : `data-dropzone="item" data-target="${id}"`)).join('')}</div>
+    <div class="history" aria-label="Recent rounds">${v.history.slice(-6).map(x => `<div class="hist" title="Round ${x.round}: ${esc(opp.name)} played ${CARDS[x.opp.key].name}, you played ${CARDS[x.you.key].name}"><div class="pair"><span>${CARDS[x.opp.key].icon}</span><span>${CARDS[x.you.key].icon}</span></div>R${x.round}</div>`).join('') || '<div class="hist empty">History</div>'}</div>
+  </footer>`;
+  // pop-ups over the board
+  if (!frozen && you.regrow && v.discard.length){
+    const uniq = [...new Set(v.discard)], full = you.hand.length >= HAND;
+    h += `<div class="popover regrowbox"><b>🌱 Garden:</b> tap a card to see its combos, then drag it into your hand${full ? ' (onto a card to swap it out, since your hand is full)' : ''}.
+      <div class="row" style="margin-top:6px">${uniq.map(e => cardFace(e,[e],'mini ' + (ui.picked === 'D:'+e ? 'sel' : ''),true,`data-drag="D:${e}" data-act="pickitem" data-id="D:${e}" aria-label="${EL[e].name} from the discard pile"`)).join('')}</div>
+      ${ui.picked && isDiscard(ui.picked) ? `<div class="gardeninfo">${helperHTML(you)}</div>` : ''}</div>`;
+  }
+  if (!frozen && ui.picked && !isDiscard(ui.picked)) h += `<div class="popover helperpop">${helperHTML(you)}</div>`;
+  if (ui.msg) h += `<div class="flash toast" role="status">${esc(ui.msg)}</div>`;
+  if (v.disconnected) h += `<div class="flash toast">Your opponent disconnected. Press ✕ to go back to the menu.</div>`;
   if (v.over){
-    const txt = v.result === 'win' ? 'You win! 🏆' : v.result === 'lose' ? `${esc(opp.name)} wins` : "It's a draw 🤝";
-    const why = v.reason === 'ko' ? (v.result === 'draw' ? 'Both fighters fell in the same round.' : 'Knockout! Health reached zero.') : 'Final health decided it.';
-    h += `<div class="panel over"><div class="big ${v.result}">${txt}</div><p class="muted">${why} Final health: you ${Math.max(0,you.hp)}, ${esc(opp.name)} ${Math.max(0,opp.hp)}.</p>
-      <div class="row" style="justify-content:center">${v.disconnected ? '' : `<button class="btn gold" data-act="rematch">Rematch</button>`}<button class="btn alt" data-act="menu">Menu</button></div></div>`;
+    const txt = v.result === 'win' ? 'You win! 🏆' : v.result === 'lose' ? `${esc(opp.name)} wins` : (v.doubleKO ? "It's a tie 🤝" : "It's a draw 🤝");
+    let why;
+    if (v.doubleKO){
+      const d = v.doubleKO;
+      why = `💥 Double knockout! Both fighters fell at the same moment, so the bigger final hit decides it. You dealt ${d.you}, ${esc(opp.name)} dealt ${d.opp}.` +
+        (v.result === 'win' ? ' Your hit was stronger!' : v.result === 'lose' ? ' Their hit was stronger.' : ' Exactly equal, so it’s a tie.');
+    } else why = v.reason === 'ko' ? 'Knockout! Health reached zero.' : 'Final health decided it.';
+    // A slim winner banner at the top of the arena, so the final blow stays visible underneath.
+    h += `<div class="overbanner over" role="status"><div class="big ${v.result}">${txt}</div><p>${why} Final health: you ${Math.max(0,you.hp)}, ${esc(opp.name)} ${Math.max(0,opp.hp)}.</p></div>`;
   }
-
-  h += `<div class="panel fighter"><div class="name" id="nm-you"><span>${you.name === 'You' ? 'You' : `You (${esc(you.name)})`}</span></div>${bars(you,'you')}${chips(you)}`;
-  if (!v.over){
-    if (you.regrow && v.discard.length && !v.youLocked && !v.reviewing){
-      const uniq = [...new Set(v.discard)];
-      h += `<div style="margin-top:6px"><div class="muted" style="font-size:.85rem">🌱 Regrow: take any card from the discard pile (yours or your opponent's)</div><div class="row" style="margin-top:4px">${uniq.map(e => cardFace(e,[e],'mini',true,`data-act="regrow" data-el="${e}" aria-label="Bring back ${EL[e].name}"`)).join('')}</div></div>`;
-    }
-    const frozen = v.youLocked || v.reviewing;
-    if (!frozen) h += pocketHTML(you);
-    else if (v.reviewing && you.held) h += `<div class="pocket"><div class="slotbox">${cardFace(keyOf(you.held.els), you.held.els)}</div><div class="info"><b>👖 Hold slot</b>Your saved card.</div></div>`;
-    if (ui.msg) h += `<p class="flash" role="status">${esc(ui.msg)}</p>`;
-    const items = frozen ? [] : handItems(you);
-    h += `<div class="muted" style="font-size:.85rem;margin-top:10px">${v.reviewing ? "Check the results, then press Continue. Your cards unlock when both players are done." : v.countdown > 0 ? 'Get ready… the battle is about to start!' : v.youLocked ? "You're ready! Tap Ready again if you want to change your card." : you.tired ? "You're tired: play a single card this round. Combos can still go in the Hold slot." : 'Drop a card on another card to merge them into a combo.'} <b>(${frozen ? you.hand.length : handItems(you).length}/${HAND} cards)</b></div>`;
-    h += `<div class="hand dropzone-hand" data-dropzone="hand">${frozen ? you.hand.map(e => cardFace(e, cardEls(e))).join('') : items.map(id => itemCard(you, id, '', id.includes('+') ? '' : `data-dropzone="item" data-target="${id}"`)).join('')}</div>`;
-    if (!frozen) h += helperHTML(you);
-  }
+  h += `<div class="rotate" role="alert"><div class="rotbox"><div class="rotic">📱↻</div><b>Please turn your phone sideways</b><p>Elemental Battle is played in landscape.</p></div></div>`;
   h += `</div>`;
   $app.innerHTML = h;
 }
+let toastText = '';
 function render(){
+  document.body.classList.toggle('ingame', screen === 'game' && !!view);
+  // Messages on the board fade away by themselves after a few seconds.
+  if (ui && ui.msg && ui.msg !== toastText){ toastText = ui.msg; const t = ui.msg; setTimeout(() => { if (ui.msg === t){ ui.msg = ''; toastText = ''; if (screen === 'game') render(); } }, 3500); }
+  if (ui && !ui.msg) toastText = '';
   if (screen === 'menu') renderMenu(); else if (screen === 'lobby') renderLobby();
   else if (view){ renderGame(); if (fxPending && screen === 'game'){ const q = fxPending; fxPending = null; playFx(q); } revealAnim = false; }
 }
@@ -1097,8 +1410,14 @@ document.addEventListener('click', e => {
   if (act === 'host') return hostGame();
   if (act === 'join') return joinGame(document.getElementById('code').value);
   if (act === 'menu') return toMenu();
+  if (act === 'fullscreen'){
+    const el = document.documentElement;
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (el.requestFullscreen) el.requestFullscreen().then(() => screen && window.screen.orientation && window.screen.orientation.lock && window.screen.orientation.lock('landscape').catch(() => {})).catch(() => {});
+    return;
+  }
   if (act === 'rematch') return ctrl.rematch();
-  if (act === 'regrow') return ctrl.doRegrow(b.dataset.el);
+  if (act === 'regrowtake'){ const el = b.dataset.el; resetPicks(); return ctrl.doRegrow(el); }
   if (!you) return;
   if (act === 'continue'){ if (view.reviewing && !view.youAck) ctrl.ackMe(); return; }
   if (view.reviewing) return;
@@ -1107,15 +1426,19 @@ document.addEventListener('click', e => {
   if (act === 'split'){ e.stopPropagation(); splitItem(b.dataset.id); }
   else if (act === 'pickitem'){
     const id = b.dataset.id;
+    if (isDiscard(id)){ ui.picked = ui.picked === id ? null : id; render(); return; }
     if (id === ui.play || id === ui.hold){ unplace(id); ui.picked = id; }
     else ui.picked = ui.picked === id ? null : id;
   }
   else if (act === 'mergewith'){ ui.msg = mergeItems(you, ui.picked, b.dataset.id); }
-  else if (act === 'place' || act === 'zone'){ if (ui.picked) ui.msg = placeItem(you, ui.picked, b.dataset.zone); }
+  else if (act === 'place' || act === 'zone'){
+    if (ui.picked && b.dataset.zone === 'play' && isMeadow(you, ui.picked)){ const m = useMeadow(you, ui.picked); if (m) ui.msg = m; }
+    else if (ui.picked) ui.msg = placeItem(you, ui.picked, b.dataset.zone);
+  }
   else if (act === 'unpick') ui.picked = null;
   else if (act === 'ready'){
     if (view.countdown > 0) return;
-    if (view.youLocked){ ctrl.unreadyMe(); return; }
+    if (view.youLocked) return;                    // Ready is final
     const mv = buildMove(); if (ui.play && validMove(you, mv)) ctrl.move(mv); return;
   }
   render();
@@ -1172,12 +1495,27 @@ function endDrag(e){
   if (!drag) return;
   const d = drag; drag = null;
   if (!d.started) return;
-  d.ghost.remove(); document.body.classList.remove('is-dragging');
+  d.ghost.remove();
+  const t = dropTarget(e.clientX, e.clientY, d.id), you = view.you; ui.msg = '';   // find the drop spot while pop-ups are still hidden
+  document.body.classList.remove('is-dragging');
   suppressClick = true; setTimeout(() => { suppressClick = false; }, 0);
-  const t = dropTarget(e.clientX, e.clientY, d.id), you = view.you; ui.msg = '';
+  if (!t && isDiscard(d.id)){ ui.msg = 'Drag it into your hand to take it.'; render(); return; }
+  if (t && isDiscard(d.id)){
+    const el = d.id.slice(2), z = t.dataset.dropzone, full = you.hand.length >= HAND;
+    if (z === 'item' && full){
+      const target = t.dataset.target;
+      if (/^\d+$/.test(target)){ resetPicks(); ctrl.doRegrow(el, +target); return; }
+      ui.msg = 'Drop it onto a single card in your hand to swap.';
+    } else if (z === 'hand' || z === 'item'){
+      if (full) ui.msg = 'Your hand is full: drop it onto the card you want to throw away.';
+      else { resetPicks(); ctrl.doRegrow(el); return; }
+    } else ui.msg = 'Drag it into your hand to take it.';
+    render(); return;
+  }
   if (t){
     const z = t.dataset.dropzone;
-    if (z === 'play' || z === 'hold') ui.msg = placeItem(you, d.id, z);
+    if (z === 'play' && isMeadow(you, d.id)){ const m = useMeadow(you, d.id); if (m) ui.msg = m; }
+    else if (z === 'play' || z === 'hold') ui.msg = placeItem(you, d.id, z);
     else if (z === 'item') ui.msg = mergeItems(you, d.id, t.dataset.target);
     else if (z === 'hand'){
       if (d.id === 'H' && !ui.unheld){
