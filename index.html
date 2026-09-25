@@ -1166,6 +1166,7 @@ function showGame(v){
   if (!v.last) seenReveal = null;
   view = v;
   if (prevRound !== v.round) resetPicks();
+  else if (ui.pendingRemap && v.you.hand.length < ui.pendingRemap.handLen) remapPicks(ui.pendingRemap);   // guest: Meadow has landed
   if (v.countdown > 0 && !cdEndLocal) cdEndLocal = Date.now() + v.countdown;
   if (!v.countdown) cdEndLocal = 0;
   if (screen === 'game') render();
@@ -1239,9 +1240,31 @@ function placeItem(you, id, zone){
 const isMeadow = (you, id) => !isDiscard(id) && itemKey(you, id) === MEADOW;
 function useMeadow(you, id){
   if (you.peek) return 'You already used Meadow this round.';
-  const srcs = srcOf(id); resetPicks(); ctrl.doPeek(srcs);
-  ui.msg = '🌾 Meadow used! Their hand is face-up above. Now play your card.';
+  const srcs = srcOf(id);
+  const plan = { removed: srcs.filter(x => x !== 'H'), held: srcs.includes('H'), handLen: you.hand.length };
+  if (ctrl.mode === 'guest') ui.pendingRemap = plan;     // online guest: wait until the new hand arrives from the host
+  else remapPicks(plan);                                 // otherwise the hand updates right away
+  ui.picked = null;
+  ctrl.doPeek(srcs);
+  ui.msg = '🌾 Meadow used! Their hand is face-up above. Now play your cards.';
   return null;
+}
+// Meadow's two cards leave your hand, so every card after them slides over a seat.
+// Update the seat numbers so anything you already placed, merged, or held stays exactly where it was.
+function remapPicks(plan){
+  const gone = new Set(plan.removed);
+  const shift = x => x === 'H' ? 'H' : x - plan.removed.filter(r => r < x).length;
+  const fix = id => {
+    if (!id || isDiscard(id)) return id;
+    const src = srcOf(id);
+    if (src.some(x => (x !== 'H' && gone.has(x)) || (x === 'H' && plan.held))) return null;   // part of Meadow itself: gone
+    return idOf(src.map(shift));
+  };
+  ui.slots = { atk: fix(ui.slots.atk), def: fix(ui.slots.def) };
+  ui.hold = fix(ui.hold);
+  ui.merges = ui.merges.map(m => fix(idOf(m))).filter(Boolean).map(srcOf);
+  if (plan.held) ui.unheld = false;
+  ui.pendingRemap = null;
 }
 function buildMove(){
   const part = id => { const x = id ? srcOf(id) : []; return { cards: x.filter(v => v !== 'H'), useHeld: x.includes('H') }; };
