@@ -290,7 +290,7 @@ body.ingame{ overflow:hidden; background:#120e0a; }
 body.ingame .wrap{ max-width:none; padding:0; }
 .board{
   --hand-h: clamp(64px, 22dvh, 160px);
-  --slot-h: clamp(84px, calc(100dvh - var(--hand-h) - 196px), 290px);
+  --slot-h: clamp(72px, min(calc(100dvh - var(--hand-h) - 222px), 15vw), 250px);
   position:fixed; inset:0; display:grid; gap:6px;
   grid-template-columns: minmax(0,1fr) minmax(118px, 17vw);
   grid-template-rows: auto minmax(0,1fr) auto;
@@ -335,6 +335,27 @@ body.ingame .wrap{ max-width:none; padding:0; }
 .board .me-bar .pocket .info{ display:none; }
 .board .me-bar .pocket .slotbox .card, .board .me-bar .pocket .slotbox .empty{ height:calc(var(--hand-h) - 10px); }
 .board .me-bar .pocket .slotbox .empty{ font-size:.7rem; line-height:1.3; }
+/* two card spots per player */
+.board .slots{ gap:clamp(8px, 2vw, 28px); }
+.board .side-pair{ display:flex; flex-direction:column; align-items:center; }
+.board .pairname{ font-size:.72rem; font-weight:800; margin-bottom:2px; text-shadow:0 1px 3px rgba(0,0,0,.8); max-width:40vw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.board .pair{ display:flex; gap:clamp(4px, 1vw, 12px); }
+.board .slot .who{ font-size:.62rem; margin-bottom:2px; opacity:.9; }
+.board .slot .empty.faint{ opacity:.45; border-style:dotted; }
+.board .slot button.empty{ font-size:.72rem; line-height:1.25; }
+.board .slot button.empty small{ font-size:.6rem; opacity:.8; }
+.board .readyrow .rb{ width:calc(var(--slot-h) * 1.5 + 12px); }
+.board .results .rpair{ display:flex; gap:4px; justify-content:center; }
+.board .results .rpair .card{ height:calc(var(--slot-h) * .8); width:auto; aspect-ratio:3/4; min-height:0; }
+.board .results .rnone{ height:calc(var(--slot-h) * .8); aspect-ratio:3/4; display:grid; place-items:center; border:1px dashed rgba(255,255,255,.35); border-radius:10px; opacity:.6; }
+.board .results .rgrid.rgrid{ grid-template-columns:1fr auto auto auto 1fr; }
+.board .results .rpair .card, .board .results .rpair .rnone{ flex:none; }
+.board .results .rcard{ max-width:none; width:auto; }
+.board .htiles{ display:flex; gap:2px; justify-content:center; min-height:26px; align-items:center; }
+.board .hwho{ font-size:.5rem; opacity:.75; }
+.board .hside .peektile small{ display:none; }
+.board .minibtn{ font-family:inherit; font-size:.66rem; font-weight:700; margin-top:3px; padding:3px 8px; border-radius:999px; border:1px solid rgba(255,255,255,.5); background:rgba(255,255,255,.1); color:#fff; cursor:pointer; justify-self:start; }
+.board .minibtn:hover{ background:rgba(255,255,255,.22); }
 /* buttons under the card spots */
 .board .readyrow{ display:flex; align-items:flex-start; justify-content:center; gap:clamp(10px, 3vw, 40px); margin-top:8px; max-width:none; width:100%; }
 .board .readyrow .rb{ width:calc(var(--slot-h) * .75); min-width:92px; display:flex; flex-direction:column; align-items:stretch; }
@@ -410,6 +431,10 @@ body.ingame .wrap{ max-width:none; padding:0; }
 .board .popover{ position:absolute; z-index:30; left:50%; transform:translateX(-50%); width:min(460px, 64vw); max-height:calc(100dvh - var(--hand-h) - 90px); overflow:auto;
   background:var(--panel); color:var(--ink); border-radius:16px; padding:10px 12px; box-shadow:0 10px 30px rgba(0,0,0,.5); border:1px solid var(--line); font-size:.85rem; }
 .board .helperpop, .board .regrowbox{ left:10px; transform:none; top:50px; bottom:auto; width:min(380px, 42vw); max-height:calc(100dvh - var(--hand-h) - 72px); }
+.board .helperpop.anchored{ transform:none; bottom:auto; width:min(330px, 52vw); box-shadow:0 10px 28px rgba(0,0,0,.55); }
+.board .helperpop.anchored .preview{ padding:6px 8px; }
+.board .helperpop.anchored .helper h3{ font-size:.78rem; }
+.board .helperpop.anchored .opt .ds{ display:none; }
 .board .gardenchip{ position:absolute; z-index:30; left:10px; top:50px; font-family:inherit; font-weight:800; font-size:.8rem; padding:6px 12px; border-radius:999px; border:2px solid var(--sup); background:var(--panel); color:var(--ink); cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,.4); }
 .board .regrowbox{ margin:0; border:2px solid var(--sup); }
 .board .gardeninfo{ margin-top:8px; border-top:1px solid var(--line); padding-top:6px; }
@@ -438,7 +463,7 @@ body.ingame .wrap{ max-width:none; padding:0; }
 }
 /* short landscape phones */
 @media (max-height: 430px){
-  .board{ font-size:12px; gap:4px; --hand-h: clamp(58px, 21dvh, 100px); --slot-h: clamp(80px, calc(100dvh - var(--hand-h) - 118px), 220px); }
+  .board{ font-size:12px; gap:4px; --hand-h: clamp(58px, 21dvh, 100px); --slot-h: clamp(64px, min(calc(100dvh - var(--hand-h) - 178px), 14vw), 200px); }
   .board .tbar{ padding:3px 8px; gap:7px; }
   .board .me-info .chips{ display:none; }
   .board .backs .back{ width:12px; height:18px; }
@@ -468,25 +493,25 @@ const EL = {
   water: { name:'Water', icon:'💧', color:'var(--water)', text:'#fff' }
 };
 const CARDS = {
-  fire:{name:'Fire',icon:'🔥',type:'damage',dmg:5},
-  wind:{name:'Wind',icon:'🌬️',type:'damage',dmg:3,pierce:'all',tire:true},
+  fire:{name:'Fire',icon:'🔥',type:'damage',dmg:7},
+  wind:{name:'Wind',icon:'🌬️',type:'damage',dmg:5,pierce:'all',tire:'atk'},
   earth:{name:'Earth',icon:'⛰️',type:'defense',shield:5},
   water:{name:'Water',icon:'💧',type:'support',heal:5,cure:true},
   wood:{name:'Wood',icon:'🌳',type:'support',boost:4},
-  'fire+water':{name:'Steam',icon:'♨️',type:'damage',dmg:10},
-  'fire+wind':{name:'Firewhirl',icon:'☄️',type:'damage',dmg:7,pierce:'half',dot:{amt:1,rounds:2,label:'Burn',icon:'🔥'}},
-  'wood+wind':{name:'Leaf Storm',icon:'🍃',type:'damage',dmg:7,pierce:'all',dot:{amt:1,rounds:3,label:'Cut',icon:'🍃'}},
-  'wood+earth':{name:'Root Quake',icon:'🌲',type:'damage',dmg:8,crack:4,tire:true},
-  'earth+water':{name:'Mudslide',icon:'🟤',type:'damage',dmg:8,tire:true},
+  'fire+water':{name:'Steam',icon:'♨️',type:'damage',dmg:12},
+  'fire+wind':{name:'Firewhirl',icon:'☄️',type:'damage',dmg:9,pierce:'half',dot:{amt:1,rounds:2,label:'Burn',icon:'🔥'}},
+  'wood+wind':{name:'Leaf Storm',icon:'🍃',type:'damage',dmg:9,pierce:'all',dot:{amt:1,rounds:3,label:'Cut',icon:'🍃'}},
+  'wood+earth':{name:'Root Quake',icon:'🌲',type:'damage',dmg:10,crack:4,tire:'atk'},
+  'earth+water':{name:'Mudslide',icon:'🟤',type:'damage',dmg:10,tire:'def'},
   'earth+earth':{name:'Mountain',icon:'🏔️',type:'defense',shield:8,sot:{amt:2,rounds:3}},
   'wood+wood':{name:'Great Tree',icon:'🌳',type:'defense',shield:8,hot:{amt:2,rounds:3},cure:true},
   'fire+fire':{name:'Inferno',icon:'☀️',type:'defense',shield:6,dot:{amt:1,rounds:3,label:'Burn',icon:'🔥'}},
-  'wind+wind':{name:'Tornado',icon:'🌪️',type:'defense',block:true,tire:true},
+  'wind+wind':{name:'Tornado',icon:'🌪️',type:'defense',block:true,tire:'def'},
   'water+water':{name:'Tidal Wave',icon:'🌊',type:'defense',shield:8,wash:true},
   'wood+fire':{name:'Campfire',icon:'🏕️',type:'support',hot:{amt:3,rounds:3},cure:true},
   'fire+earth':{name:'Forge',icon:'🔨',type:'support',forge:true},
   'earth+wind':{name:'Meadow',icon:'🌾',type:'support',peek:true},
-  'wind+water':{name:'Rain',icon:'🌧️',type:'support',mirror:true},
+  'wind+water':{name:'Rain',icon:'🌧️',type:'support',heal:3,cleanse:true,cure:true},
   'wood+water':{name:'Garden',icon:'🌱',type:'support',regrow:true,hot:{amt:2,rounds:3},cure:true}
 };
 const TYPE = { damage:{label:'Damage',icon:'⚔️'}, defense:{label:'Defense',icon:'🛡️'}, support:{label:'Support',icon:'💚'} };
@@ -511,12 +536,12 @@ function describe(d){
   if (d.block) p.push('blocks the next hit completely');
   if (d.wash) p.push('washes away their boosts');
   if (d.boost) p.push(`your next damage card +${d.boost}`);
-  if (d.forge) p.push("your next card's numbers ×2");
+  if (d.forge) p.push("your next card in the same slot is doubled");
   if (d.peek) p.push("free action: drop it in your card spot to see their hand and the card they lock in this round, then still play a card");
-  if (d.mirror) p.push("copy their card this round");
+  if (d.cleanse) p.push("washes off your burns, cuts and Tired");
   if (d.regrow) p.push("take any card from the discard pile");
-  if (d.tire) p.push("makes them Tired (single cards only next round)");
-  if (d.cure) p.push("blocks Tired this round");
+  if (d.tire) p.push(d.tire === 'atk' ? "makes them Tired ⚔️ (single cards only in their attack slot next round)" : "makes them Tired 🛡️ (single cards only in their defense slot next round)");
+  if (d.cure && !d.cleanse) p.push("blocks Tired this round");
   const s = p.join(', ');
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
@@ -539,7 +564,7 @@ function dealRound(s, first){
   }
 }
 function newPlayer(name){
-  return { name, hp:MAX_HP, shield:0, hand:[], used:[], tired:false, boost:0, forge:false, weak:0, block:false, effects:[], peek:false, regrow:0, held:null };
+  return { name, hp:MAX_HP, shield:0, hand:[], used:[], tired:false, boost:0, forge:false, weak:0, block:false, effects:[], peek:false, regrow:0, held:null, tiredAtk:false, tiredDef:false, forgeAtk:false, forgeDef:false, discardUsed:false };
 }
 function newGame(names){
   const s = { round:1, overtime:false, over:false, winner:null, reason:null, players:[newPlayer(names[0]), newPlayer(names[1])], last:null, history:[], startEvents:[],
@@ -552,47 +577,6 @@ function healWithOverflow(p, n){
   const b = p.hp; p.hp = Math.min(MAX_HP, p.hp + n);
   const extra = n - (p.hp - b), bs = p.shield; p.shield = Math.min(MAX_SHIELD, p.shield + Math.max(0, extra));
   return { healed:p.hp - b, shield:p.shield - bs };
-}
-// A move:
-//   cards:[hand indexes to play]      useHeld: play the held card
-//   hold:{ cards:[hand indexes], useHeld }   put something in the Hold slot (if the slot is full, the old card swaps back to your hand)
-//   merges:[[i,j], ...]               merge cards and KEEP the combo in your hand ("H" = the held card)
-//   unhold: true                       move the held card back into your hand
-// Your hand can hold at most 5 cards (a combo counts as one).
-function validMove(p, mv){
-  if (!mv || !Array.isArray(mv.cards)) return false;
-  const c = mv.cards, okIx = i => Number.isInteger(i) && i >= 0 && i < p.hand.length;
-  const used = new Set();
-  const take = i => { if (!okIx(i) || used.has(i)) return false; used.add(i); return true; };
-  if (!c.every(take)) return false;
-  const useHeld = !!mv.useHeld;
-  if (useHeld && !p.held) return false;
-  const playEls = (useHeld ? p.held.els.length : 0) + c.reduce((t,i) => t + cardEls(p.hand[i]).length, 0);
-  if (playEls < 1 || playEls > 2 || (playEls === 2 && p.tired)) return false;
-  if (moveInfo(p, mv).key === MEADOW) return false;          // Meadow is a free action, not a card you play
-  let heldGone = useHeld, returns = 0;
-  for (const m of (mv.merges || [])){                              // merges first, so a merged held card isn't mistaken for a swap
-    if (!Array.isArray(m) || m.length !== 2) return false;
-    for (const x of m){
-      if (x === 'H'){ if (heldGone || !p.held || p.held.els.length !== 1) return false; heldGone = true; }
-      else if (!take(x) || cardEls(p.hand[x]).length !== 1) return false;
-    }
-    returns++;
-  }
-  if (mv.hold){
-    const h = mv.hold.cards, hHeld = !!mv.hold.useHeld;
-    if (!Array.isArray(h) || !h.every(take)) return false;
-    const hEls = (hHeld ? (p.held ? p.held.els.length : 9) : 0) + h.reduce((t,i) => t + cardEls(p.hand[i]).length, 0);
-    if (hEls !== 1) return false;               // the Hold slot only fits one single card
-    if (hHeld){ if (heldGone || !p.held || h.length !== 1) return false; heldGone = true; }
-    else if (p.held && !heldGone){ returns++; heldGone = true; }       // swap: the old held card goes back to your hand
-  }
-  if (mv.unhold){ if (heldGone || !p.held) return false; heldGone = true; returns++; }
-  return p.hand.length - used.size + returns <= HAND;
-}
-function moveInfo(p, mv){
-  const els = [...(mv.useHeld && p.held ? p.held.els : []), ...mv.cards.flatMap(i => cardEls(p.hand[i]))];
-  const key = keyOf(els); return { els, key, def:CARDS[key], fromHeld:!!mv.useHeld };
 }
 // Garden: take any card from the shared discard pile into your hand.
 function applyRegrow(s, pi, el, swapIdx){
@@ -609,7 +593,7 @@ const MEADOW = 'earth+wind';
 // to see the other player's hand and the card they lock in THIS round. You still play a card.
 function applyPeek(s, pi, srcs){
   const p = s.players[pi];
-  if (p.peek || p.tired || !Array.isArray(srcs) || !srcs.length || srcs.length > 2) return false;
+  if (p.peek || !Array.isArray(srcs) || !srcs.length || srcs.length > 2) return false;
   if (new Set(srcs.map(String)).size !== srcs.length) return false;
   const els = [];
   for (const x of srcs){
@@ -629,16 +613,6 @@ function findMeadow(p){
   const e = p.hand.indexOf('earth'), w = p.hand.indexOf('wind');
   return e >= 0 && w >= 0 ? [e, w] : null;
 }
-function allMoves(p){
-  const out = []; p.hand.forEach((c,i) => { if (!(p.tired && cardEls(c).length === 2) && c !== MEADOW) out.push({cards:[i]}); });
-  if (p.held && !(p.tired && p.held.els.length === 2)) out.push({ cards:[], useHeld:true });
-  if (!p.tired){ const seen = new Set();
-    const single = i => !p.hand[i].includes('+');
-    for (let i=0;i<p.hand.length;i++) for (let j=i+1;j<p.hand.length;j++){ if (!single(i) || !single(j)) continue; const k = pairKey(p.hand[i],p.hand[j]); if (k !== MEADOW && !seen.has(k)){ seen.add(k); out.push({cards:[i,j]}); } }
-    if (p.held && p.held.els.length === 1){ const seenH = new Set(); p.hand.forEach((e,i) => { if (single(i) && !seenH.has(e) && pairKey(e, p.held.els[0]) !== MEADOW){ seenH.add(e); out.push({ cards:[i], useHeld:true }); } }); }
-  }
-  return out;
-}
 
 function addEffect(p, id, kind, amt, rounds, label, icon){
   const e = p.effects.find(x => x.id === id);
@@ -648,6 +622,11 @@ function addEffect(p, id, kind, amt, rounds, label, icon){
 // Over-time effects tick at the start of each round, before cards are played.
 function tickEffects(s){
   const ev = [], fx = [], dealt = [0,0];
+  if (s.round >= POWER_FROM){                       // 🪨 the arena crumbles: both lose a little more each power round (skips shield)
+    const q = s.round - POWER_FROM + 2;
+    s.players.forEach((p, pi) => { p.hp -= q; fx.push({ t:pi, kind:'hp-', amt:q, icon:'🪨' }); });
+    ev.push(`🪨 The arena crumbles! Both fighters lose ${q} health.`);
+  }
   s.players.forEach((p, pi) => {
     p.effects.forEach(e => {
       if (e.kind === 'dot'){ p.hp -= e.amt; dealt[1-pi] += e.amt; ev.push(`${e.icon} ${e.label}: ${p.name} loses ${e.amt} health.`); fx.push({ t:pi, kind:'hp-', amt:e.amt, icon:e.icon }); }
@@ -666,100 +645,178 @@ function doubleKO(s, dealt){
   s.doubleKO = { dealt:dealt.slice() };
   return dealt[0] > dealt[1] ? 0 : dealt[1] > dealt[0] ? 1 : null;
 }
+function aiRegrow(s, pi, level){
+  const p = s.players[pi], pile = s.discard; if (!p.regrow || !pile.length) return null;
+  if (level === 'easy') return pile[rnd(pile.length)];
+  const prio = p.hp < 15 ? ['water','earth','fire','wind','wood'] : ['fire','wind','earth','water','wood'];
+  return prio.find(e => pile.includes(e)) || pile[0];
+}
+
+// ================= TWO-SLOT RULES =================
+// Each round a player may put a card in their ⚔️ attack slot and/or their 🛡️ defense slot.
+// Damage cards go in ⚔️, Defense cards in 🛡️, Support cards fit either (but only one Support card per round).
+const SLOTS = ['atk','def'];
+const slotFits = (slot, d) => d.type === 'support' || (slot === 'atk' ? d.type === 'damage' : d.type === 'defense');
+const slotTired = (p, slot) => slot === 'atk' ? p.tiredAtk : p.tiredDef;
+// A move:
+//   atk:{ cards:[hand indexes], useHeld }, def:{ cards:[hand indexes], useHeld }   (either may be empty)
+//   hold:{ cards:[hand indexes], useHeld }   put a single card in the Hold slot (a full slot swaps its card back)
+//   merges:[[i,j], ...]  keep merged combos in your hand ("H" = held card)      unhold: move the held card back to your hand
+function slotInfo(p, part){
+  if (!part) return null;
+  const els = [...(part.useHeld && p.held ? p.held.els : []), ...(part.cards || []).flatMap(i => cardEls(p.hand[i]))];
+  if (!els.length) return null;
+  const key = keyOf(els); return { els, key, d:CARDS[key], fromHeld:!!part.useHeld };
+}
+function validMove(p, mv){
+  if (!mv) return false;
+  const okIx = i => Number.isInteger(i) && i >= 0 && i < p.hand.length, used = new Set();
+  const take = i => { if (!okIx(i) || used.has(i)) return false; used.add(i); return true; };
+  let heldGone = false, supports = 0, filled = 0, returns = 0;
+  for (const slot of SLOTS){
+    const part = mv[slot] || { cards:[] };
+    if (!Array.isArray(part.cards || []) || !(part.cards || []).every(take)) return false;
+    if (part.useHeld){ if (!p.held || heldGone) return false; heldGone = true; }
+    const info = slotInfo(p, part); if (!info) continue;
+    if (info.els.length > 2 || (info.els.length === 2 && slotTired(p, slot))) return false;
+    if (info.key === MEADOW || !slotFits(slot, info.d)) return false;
+    if (info.d.type === 'support') supports++;
+    filled++;
+  }
+  if (!filled || supports > 1) return false;
+  for (const m of (mv.merges || [])){                              // merges first, so a merged held card isn't mistaken for a swap
+    if (!Array.isArray(m) || m.length !== 2) return false;
+    for (const x of m){
+      if (x === 'H'){ if (heldGone || !p.held || p.held.els.length !== 1) return false; heldGone = true; }
+      else if (!take(x) || cardEls(p.hand[x]).length !== 1) return false;
+    }
+    returns++;
+  }
+  if (mv.hold){
+    const h = mv.hold.cards || [];
+    if (!h.every(take) || mv.hold.useHeld) return false;
+    const hEls = h.reduce((t,i) => t + cardEls(p.hand[i]).length, 0);
+    if (hEls !== 1) return false;                                  // the Hold slot only fits one single card
+    if (p.held && !heldGone){ returns++; heldGone = true; }        // swap: the old held card goes back to your hand
+  }
+  if (mv.unhold){ if (heldGone || !p.held) return false; heldGone = true; returns++; }
+  return p.hand.length - used.size + returns <= HAND;
+}
+function allMoves(p){                        // every way to fill the two slots from single hand cards, pairs, and the held card
+  const opts = slot => {
+    const out = [null];
+    const add = part => { const i = slotInfo(p, part); if (i && i.key !== MEADOW && slotFits(slot, i.d) && !(i.els.length === 2 && slotTired(p, slot))) out.push(part); };
+    p.hand.forEach((_,i) => add({ cards:[i] }));
+    for (let i=0;i<p.hand.length;i++) for (let j=i+1;j<p.hand.length;j++) if (!p.hand[i].includes('+') && !p.hand[j].includes('+')) add({ cards:[i,j] });
+    if (p.held) add({ cards:[], useHeld:true });
+    return out;
+  };
+  const A = opts('atk'), D = opts('def'), out = [], seen = new Set();
+  for (const a of A) for (const d of D){
+    const mv = { atk:a || { cards:[] }, def:d || { cards:[] } };
+    const sig = JSON.stringify([slotInfo(p, mv.atk) && slotInfo(p, mv.atk).key, slotInfo(p, mv.def) && slotInfo(p, mv.def).key, mv.atk.useHeld, mv.def.useHeld]);
+    if (seen.has(sig) || !validMove(p, mv)) continue; seen.add(sig); out.push(mv);
+  }
+  return out;
+}
+// Discard all: once per game, throw your hand away and draw 5 fresh cards right now. Your held card stays.
+function applyDiscardAll(s, pi){
+  const p = s.players[pi]; if (p.discardUsed) return false;
+  s.discard.push(...p.hand.flatMap(cardEls)); p.hand = [];
+  for (let k=0; k<HAND; k++) p.hand.push(drawCard(s));
+  p.discardUsed = true; return true;
+}
+// After a round: draw up to 2 new cards, or 5 if your hand is empty. Players take turns being dealt.
+function refillRound(s, first){
+  const want = s.players.map(p => p.hand.length === 0 ? HAND : Math.min(2, Math.max(0, HAND - p.hand.length)));
+  for (let k=0; k<Math.max(...want); k++) [first, 1-first].forEach(i => { if (k < want[i]) s.players[i].hand.push(drawCard(s)); });
+  return want;
+}
+
 function resolve(state, moves){
-  const s = clone(state), P = s.players, ev = [], fx = [];
+  const s = clone(state), P = s.players, ev = [], fx = [], dealt = [0,0];
   const F = (t, kind, amt, label) => fx.push({ t, kind, amt, label });
-  const played = [0,1].map(i => moveInfo(P[i], moves[i]));
-  let eff = [played[0].key, played[1].key];
-  const mirror = [!!played[0].def.mirror, !!played[1].def.mirror];
-  if (mirror[0] && mirror[1]){ eff = [null,null]; ev.push('Both played Rain! The two mirrors cancel out.'); F(0,'status',0,'🌧️ Cancelled'); F(1,'status',0,'🌧️ Cancelled'); }
-  else {
-    if (mirror[0]){ eff[0] = played[1].key; ev.push(`${P[0].name}'s Rain mirrors ${played[1].def.name}!`); F(0,'status',0,'🌧️ Mirror'); }
-    if (mirror[1]){ eff[1] = played[0].key; ev.push(`${P[1].name}'s Rain mirrors ${played[0].def.name}!`); F(1,'status',0,'🌧️ Mirror'); }
-  }
-  const D = eff.map(k => k ? CARDS[k] : null);
-  const mod = P.map(p => ({ w:p.weak, m:p.forge ? 2 : 1 }));
-  P.forEach(p => { p.weak = 0; p.forge = false; p.peek = false; });
-  const pm = isPowerRound(s.round) ? POWER : 1;
-  const val = (i,n) => Math.ceil(Math.max(0, n - mod[i].w) * mod[i].m * pm);          // numbers on the card played this round
-  const valOT = (i,n) => Math.max(0, n - mod[i].w) * mod[i].m;                       // over-time amounts don't get the power boost
-  const next = [{}, {}], dealt = [0,0], tireHit = [false,false], cured = [false,false];
-  const heal = (p,n) => { const b = p.hp; p.hp = Math.min(MAX_HP, p.hp + n); return p.hp - b; };
+  const pm = isPowerRound(s.round) ? POWER : 1;                    // power rounds: only attacks get ×1.5
+  const play = P.map((p,i) => ({ atk:slotInfo(p, moves[i].atk), def:slotInfo(p, moves[i].def) }));
+  const mult = P.map(p => ({ atk:p.forgeAtk ? 2 : 1, def:p.forgeDef ? 2 : 1 }));
+  P.forEach(p => { p.forgeAtk = false; p.forgeDef = false; p.peek = false; });
+  const val = (i, slot, n, attack) => Math.ceil(Math.max(0, n) * mult[i][slot] * (attack ? pm : 1));
+  const next = [{}, {}], tire = [{ atk:false, def:false }, { atk:false, def:false }], cured = [false,false];
 
-  // Phase 1: defense & support
-  for (let i=0;i<2;i++){
-    const d = D[i]; if (!d || d.type === 'damage') continue;
-    const p = P[i];
-    if (d.shield){ const b = p.shield; p.shield = Math.min(MAX_SHIELD, p.shield + val(i,d.shield)); ev.push(`🛡️ ${p.name} builds ${p.shield-b} shield${p.shield===MAX_SHIELD?' (full)':''}.`); if (p.shield > b) F(i,'sh+',p.shield-b); }
-    if (d.heal){ const r = healWithOverflow(p, val(i,d.heal));
-      if (r.healed){ ev.push(`💚 ${p.name} heals ${r.healed}.`); F(i,'hp+',r.healed); }
-      if (r.shield){ ev.push(`🛡️ ${p.name}'s extra healing becomes ${r.shield} shield.`); F(i,'sh+',r.shield); }
-      if (!r.healed && !r.shield) ev.push(`💚 ${p.name} is already at full health and full shield.`); }
-    if (d.hot){ addEffect(p, eff[i]+':hot', 'hot', valOT(i,d.hot.amt), d.hot.rounds, 'Heal', '💚'); ev.push(`💚 ${p.name} will heal ${valOT(i,d.hot.amt)} each round for ${d.hot.rounds} rounds.`); F(i,'status',0,'💚 Regen'); }
-    if (d.sot){ addEffect(p, eff[i]+':sot', 'sot', valOT(i,d.sot.amt), d.sot.rounds, 'Wall', '🧱'); ev.push(`🧱 ${p.name}'s wall will grow ${valOT(i,d.sot.amt)} each round for ${d.sot.rounds} rounds.`); F(i,'status',0,'🧱 Growing wall'); }
-    if (d.dot){ const o = P[1-i]; addEffect(o, eff[i]+':dot', 'dot', valOT(i,d.dot.amt), d.dot.rounds, d.dot.label, d.dot.icon); ev.push(`${d.dot.icon} ${o.name} will ${d.dot.label.toLowerCase()} for ${valOT(i,d.dot.amt)} each round for ${d.dot.rounds} rounds.`); F(1-i,'status',0,`${d.dot.icon} ${d.dot.label}!`); }
-    if (d.cure) cured[i] = true;
-    if (d.tire) tireHit[1-i] = true;            // Tornado: the opponent is knocked dizzy
+  // Phase 1: defense and support cards, from either slot
+  for (let i=0;i<2;i++) for (const slot of SLOTS){
+    const c = play[i][slot]; if (!c || c.d.type === 'damage') continue;
+    const d = c.d, p = P[i], o = P[1-i];
+    if (d.shield){ const b = p.shield; p.shield = Math.min(MAX_SHIELD, p.shield + val(i,slot,d.shield)); ev.push(`🛡️ ${p.name} builds ${p.shield-b} shield.`); if (p.shield > b) F(i,'sh+',p.shield-b); }
+    if (d.heal){ const r = healWithOverflow(p, val(i,slot,d.heal)); if (r.healed){ ev.push(`💚 ${p.name} heals ${r.healed}.`); F(i,'hp+',r.healed); } if (r.shield){ ev.push(`🛡️ ${p.name}'s extra healing becomes ${r.shield} shield.`); F(i,'sh+',r.shield); } }
+    if (d.hot){ addEffect(p, c.key+':hot', 'hot', d.hot.amt * mult[i][slot], d.hot.rounds, 'Heal', '💚'); ev.push(`💚 ${p.name} will heal ${d.hot.amt * mult[i][slot]} each round for ${d.hot.rounds} rounds.`); F(i,'status',0,'💚 Regen'); }
+    if (d.sot){ addEffect(p, c.key+':sot', 'sot', d.sot.amt * mult[i][slot], d.sot.rounds, 'Wall', '🧱'); ev.push(`🧱 ${p.name}'s wall will grow each round.`); F(i,'status',0,'🧱 Growing wall'); }
+    if (d.dot){ addEffect(o, c.key+':dot', 'dot', d.dot.amt * mult[i][slot], d.dot.rounds, d.dot.label, d.dot.icon); ev.push(`${d.dot.icon} ${o.name} will ${d.dot.label.toLowerCase()} each round.`); F(1-i,'status',0,`${d.dot.icon} ${d.dot.label}!`); }
     if (d.block){ p.block = true; ev.push(`🌪️ ${p.name} is ready to block the next hit.`); F(i,'status',0,'🌪️ Guard up'); }
-    if (d.boost){ p.boost += val(i,d.boost); ev.push(`🌳 ${p.name}'s next damage card gets +${val(i,d.boost)}.`); F(i,'status',0,`🌳 +${val(i,d.boost)} power`); }
-    if (d.forge){ next[i].forge = true; ev.push(`🔨 ${p.name}'s next card will be doubled.`); F(i,'status',0,'🔨 ×2 next'); }
-    if (d.peek){ next[i].peek = true; ev.push(`🌾 ${p.name} can see the other hand, and next round the card they lock in.`); F(i,'status',0,'🌾 Peek'); }
-    if (d.regrow){ p.regrow++; ev.push(`🌱 ${p.name} can bring back a used card.`); F(i,'status',0,'🌱 Regrow'); }
+    if (d.boost){ p.boost += val(i,slot,d.boost); ev.push(`🌳 ${p.name}'s next attack gets +${val(i,slot,d.boost)}.`); F(i,'status',0,`🌳 +${val(i,slot,d.boost)} power`); }
+    if (d.forge){ next[i][slot] = true; ev.push(`🔨 ${p.name}'s next ${slot === 'atk' ? 'attack' : 'defense'} card will be doubled.`); F(i,'status',0, slot === 'atk' ? '🔨 ×2 next ⚔️' : '🔨 ×2 next 🛡️'); }
+    if (d.regrow){ p.regrow++; ev.push(`🌱 ${p.name} can take a card from the discard pile.`); F(i,'status',0,'🌱 Regrow'); }
+    if (d.cure) cured[i] = true;
+    if (d.cleanse){ const had = p.effects.some(e => e.kind === 'dot'); p.effects = p.effects.filter(e => e.kind !== 'dot'); ev.push(`🌧️ ${p.name} is washed clean${had ? ' of burns and cuts' : ''}.`); F(i,'status',0,'🌧️ Cleansed'); }
+    if (d.tire) tire[1-i][d.tire] = true;                          // Tornado: knocks them dizzy
   }
-  for (let i=0;i<2;i++){ if (D[i] && D[i].wash){ const o = P[1-i]; if (o.boost || next[1-i].forge){ ev.push(`🌊 ${P[i].name} washes away ${o.name}'s boosts.`); F(1-i,'status',0,'🌊 Washed'); } o.boost = 0; next[1-i].forge = false; } }
+  for (let i=0;i<2;i++) for (const slot of SLOTS){ const c = play[i][slot]; if (c && c.d.wash){ const o = P[1-i]; if (o.boost || next[1-i].atk || next[1-i].def){ ev.push(`🌊 ${P[i].name} washes away ${o.name}'s boosts.`); F(1-i,'status',0,'🌊 Washed'); } o.boost = 0; next[1-i] = {}; } }
 
-  // Phase 2: damage
+  // Phase 2: attacks
   const hits = [];
   for (let i=0;i<2;i++){
-    const d = D[i]; if (!d || d.type !== 'damage') continue;
-    const p = P[i], o = P[1-i];
-    let amt = Math.ceil((Math.max(0, d.dmg - mod[i].w) + p.boost) * mod[i].m * pm); p.boost = 0;
-    if (d.crack){ const c = Math.min(o.shield, val(i,d.crack)); o.shield -= c; if (c){ ev.push(`🌲 ${d.name} cracks ${c} off ${o.name}'s shield.`); F(1-i,'sh-',c); dealt[i] += c; } }
-    if (d.weaken){ next[1-i].weak = d.weaken; ev.push(`🟤 ${o.name}'s next card will be ${d.weaken} weaker.`); F(1-i,'status',0,`🟤 −${d.weaken} next`); }
+    const c = play[i].atk; if (!c || c.d.type !== 'damage') continue;
+    const d = c.d, p = P[i], o = P[1-i];
+    const amt = Math.ceil((d.dmg + p.boost) * mult[i].atk * pm); p.boost = 0;
+    if (d.crack){ const k = Math.min(o.shield, val(i,'atk',d.crack,true)); o.shield -= k; if (k){ ev.push(`🌲 ${d.name} cracks ${k} off ${o.name}'s shield.`); F(1-i,'sh-',k); dealt[i] += k; } }
     const pierce = d.pierce === 'all' ? amt : d.pierce === 'half' ? Math.floor(amt/2) : 0;
-    hits.push({ by:i, tire:!!d.tire, t:1-i, normal:amt-pierce, pierce, src:`${p.name}'s ${d.name}`, dot: d.dot ? { id:eff[i]+':dot', amt:valOT(i,d.dot.amt), rounds:d.dot.rounds, label:d.dot.label, icon:d.dot.icon } : null });
+    hits.push({ by:i, t:1-i, normal:amt-pierce, pierce, tire:d.tire, src:`${p.name}'s ${d.name}`, dot: d.dot ? { id:c.key+':dot', amt:d.dot.amt * mult[i].atk, rounds:d.dot.rounds, label:d.dot.label, icon:d.dot.icon } : null });
   }
   for (const h of hits){
     const t = P[h.t];
     if (t.block){ t.block = false; ev.push(`🌪️ ${t.name} blocks ${h.src} completely!`); F(h.t,'status',0,'🌪️ Blocked!'); continue; }
-    if (h.tire) tireHit[h.t] = true;            // a hit that lands makes them Tired
     let n = h.normal; const abs = Math.min(t.shield, n); t.shield -= abs; n -= abs;
     const hp = n + h.pierce; t.hp -= hp; dealt[h.by] += abs + hp;
     ev.push(`⚔️ ${h.src} hits ${t.name}: ${abs ? abs+' to shield, ' : ''}${hp} to health.`);
     if (abs) F(h.t,'sh-',abs); if (hp) F(h.t,'hp-',hp);
-    if (h.dot){ addEffect(t, h.dot.id, 'dot', h.dot.amt, h.dot.rounds, h.dot.label, h.dot.icon); F(h.t,'status',0,`${h.dot.icon} ${h.dot.label}!`); ev.push(`${h.dot.icon} ${t.name} will ${h.dot.label.toLowerCase()} for ${h.dot.amt} each round for ${h.dot.rounds} rounds.`); }
+    if (h.dot){ addEffect(t, h.dot.id, 'dot', h.dot.amt, h.dot.rounds, h.dot.label, h.dot.icon); F(h.t,'status',0,`${h.dot.icon} ${h.dot.label}!`); ev.push(`${h.dot.icon} ${t.name} will ${h.dot.label.toLowerCase()} each round.`); }
+    if (h.tire) tire[h.t][h.tire] = true;
+  }
+  // Tired lasts one round, only in that slot; a cure played this round blocks it
+  for (let i=0;i<2;i++) for (const slot of SLOTS){
+    if (!tire[i][slot]) continue;
+    const icon = slot === 'atk' ? '⚔️' : '🛡️';
+    if (cured[i]){ ev.push(`✨ ${P[i].name} shakes off being Tired.`); F(i,'status',0,'✨ Not tired!'); }
+    else { ev.push(`😮‍💨 ${P[i].name} is Tired ${icon}: single cards only in that slot next round.`); F(i,'status',0,`😮‍💨 Tired ${icon}!`); }
   }
   if (!ev.length) ev.push('A quiet round. Nothing happened.');
 
-  // Tired lasts one round; a cure played this same round blocks it.
+  // Cleanup: move cards, Hold slot, kept merges, then refill
+  s.history.push({ round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ atk: play[i].atk && { key:play[i].atk.key, els:play[i].atk.els }, def: play[i].def && { key:play[i].def.key, els:play[i].def.els } })), fx });
+  s.startEvents = []; s.startFx = [];
+  s.last = { round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ atk:play[i].atk && { key:play[i].atk.key, els:play[i].atk.els, fromHeld:play[i].atk.fromHeld }, def:play[i].def && { key:play[i].def.key, els:play[i].def.els, fromHeld:play[i].def.fromHeld } })), events:ev, fx };
   for (let i=0;i<2;i++){
-    if (tireHit[i] && cured[i]){ ev.push(`✨ ${P[i].name} shakes off being Tired.`); F(i,'status',0,'✨ Not tired!'); }
-    else if (tireHit[i]){ ev.push(`😮‍💨 ${P[i].name} is Tired: single cards only next round.`); F(i,'status',0,'😮‍💨 Tired!'); }
-  }
-  // Cleanup
-  for (let i=0;i<2;i++){
-    const p = P[i];
-    p.tired = tireHit[i] && !cured[i];
-    p.forge = !!next[i].forge; p.weak = next[i].weak || 0; p.peek = !!next[i].peek;
-    const mv = moves[i], oldHeld = p.held;
-    const holdEls = mv.hold ? [...(mv.hold.useHeld ? oldHeld.els : []), ...mv.hold.cards.flatMap(ix => cardEls(p.hand[ix]))] : null;
+    const p = P[i], mv = moves[i], oldHeld = p.held;
+    p.tiredAtk = tire[i].atk && !cured[i]; p.tiredDef = tire[i].def && !cured[i];
+    p.forgeAtk = !!next[i].atk; p.forgeDef = !!next[i].def;
+    const usedHeld = (mv.atk && mv.atk.useHeld) || (mv.def && mv.def.useHeld);
+    const holdEls = mv.hold ? (mv.hold.cards || []).flatMap(ix => cardEls(p.hand[ix])) : null;
     const kept = (mv.merges || []).map(m => keyOf(m.flatMap(x => x === 'H' ? oldHeld.els : cardEls(p.hand[x]))));
     const heldMerged = (mv.merges || []).some(m => m.includes('H'));
-    let back = null;                                                  // the held card coming back to your hand
-    if (oldHeld && (mv.unhold || (mv.hold && !mv.hold.useHeld && !mv.useHeld && !heldMerged))) back = keyOf(oldHeld.els);
-    if (mv.useHeld || (mv.hold && mv.hold.useHeld) || heldMerged || back) p.held = null;
-    if (holdEls) p.held = { els:holdEls };
-    const gone = [...mv.cards, ...(mv.hold ? mv.hold.cards : []), ...(mv.merges || []).flat().filter(x => x !== 'H')];
+    let back = null;
+    if (oldHeld && (mv.unhold || (mv.hold && !usedHeld && !heldMerged))) back = keyOf(oldHeld.els);
+    if (usedHeld || heldMerged || back) p.held = null;
+    if (holdEls && holdEls.length) p.held = { els:holdEls };
+    const playedIdx = [...((mv.atk && mv.atk.cards) || []), ...((mv.def && mv.def.cards) || [])];
+    const gone = [...playedIdx, ...((mv.hold && mv.hold.cards) || []), ...(mv.merges || []).flat().filter(x => x !== 'H')];
     gone.sort((a,b) => b-a).forEach(ix => p.hand.splice(ix,1));
     p.hand.push(...kept); if (back) p.hand.push(back);
-    s.discard.push(...played[i].els);
+    SLOTS.forEach(slot => { if (play[i][slot]) s.discard.push(...play[i][slot].els); });
   }
   s.reshuffled = false;
-  dealRound(s, s.round % 2);            // take turns being dealt the first card
+  const drew = refillRound(s, s.round % 2);
+  drew.forEach((n,i) => { if (n === HAND) ev.push(`🎴 ${P[i].name} emptied their hand and draws a fresh 5!`); });
   if (s.reshuffled){ ev.push('🔀 The deck ran out, so the discard pile was shuffled back in.'); F(0,'status',0,'🔀 Deck reshuffled'); F(1,'status',0,'🔀 Deck reshuffled'); }
-  s.history.push({ round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ key:played[i].key, els:played[i].els })), fx });   // fx: what happened, for the history column
-  s.startEvents = []; s.startFx = [];
-  s.last = { round:s.round, overtime:s.overtime, cards:[0,1].map(i => ({ key:played[i].key, els:played[i].els, eff:eff[i], fromHeld:played[i].fromHeld })), events:ev, fx };
 
   const dead = P.map(p => p.hp <= 0);
   if (dead[0] || dead[1]){ s.over = true; s.reason = 'ko'; s.winner = dead[0] && dead[1] ? doubleKO(s, dealt) : dead[0] ? 1 : 0; }
@@ -778,98 +835,77 @@ function resolve(state, moves){
 
 function viewFor(s, pi, locked, pending){
   const you = s.players[pi], opp = s.players[1-pi];
+  const slotView = (p, part) => { const i = slotInfo(p, part); return i && { key:i.key, els:i.els, fromHeld:i.fromHeld }; };
   return {
     round:s.round, overtime:s.overtime, over:s.over, reason:s.reason, power:isPowerRound(s.round),
     doubleKO: s.doubleKO ? { you:s.doubleKO.dealt[pi], opp:s.doubleKO.dealt[1-pi] } : null,
     result: !s.over ? null : s.winner === null ? 'draw' : s.winner === pi ? 'win' : 'lose',
     you: clone(you),
-    opp: Object.assign(clone(opp), { hand: you.peek ? clone(opp.hand) : null, handCount: opp.hand.length, held: you.peek ? clone(opp.held) : null, hasHeld: !!opp.held, peek:false }),   // keep Meadow's peek secret
+    opp: Object.assign(clone(opp), { hand: you.peek ? clone(opp.hand) : null, handCount: opp.hand.length, held: you.peek ? clone(opp.held) : null, hasHeld: !!opp.held, peek:false }),
     history: s.history.map(h => ({ round:h.round, overtime:h.overtime, you:h.cards[pi], opp:h.cards[1-pi], fx:(h.fx || []).map(f => Object.assign({}, f, { who: f.t === pi ? 'you' : 'opp' })) })),
     startEvents: s.startEvents || [],
-    discard: s.discard.slice(),
     startFx: (s.startFx || []).map(f => Object.assign({}, f, { who: f.t === pi ? 'you' : 'opp' })),
+    discard: s.discard.slice(),
     last: s.last ? { round:s.last.round, overtime:s.last.overtime, you:s.last.cards[pi], opp:s.last.cards[1-pi], events:s.last.events, fx:(s.last.fx || []).map(f => Object.assign({}, f, { who: f.t === pi ? 'you' : 'opp' })) } : null,
     youLocked: !!(locked && locked[pi]), oppLocked: !!(locked && locked[1-pi]),
-    // 🌾 Meadow: once they press Ready, the peeking player sees the card they'll play
-    oppCard: (you.peek && pending && pending[1-pi]) ? (() => { const m = moveInfo(opp, pending[1-pi]); return { key:m.key, els:m.els, fromHeld:m.fromHeld }; })() : null
+    // 🌾 Meadow: once they press Ready, the peeking player sees both of their cards
+    oppCards: (you.peek && pending && pending[1-pi]) ? { atk:slotView(opp, pending[1-pi].atk), def:slotView(opp, pending[1-pi].def) } : null
   };
 }
 
-// ================= COMPUTER PLAYER =================
+// ================= COMPUTER PLAYER (two slots) =================
 function evaluate(s, pi){
   if (s.over) return s.winner === null ? 0 : s.winner === pi ? 1000 : -1000;
   const fx = p => p.effects.reduce((t,e) => t + e.amt*e.left*(e.kind==='dot' ? -1 : e.kind==='hot' ? 0.9 : 0.5), 0);
-  const f = p => p.hp + p.shield*0.6 + p.boost*0.5 + (p.forge?4:0) + (p.block?4:0) + fx(p) + (p.peek?1.5:0) + (p.held?2:0) + p.regrow*2 - (p.tired?1.5:0) - p.weak*0.7;
+  const f = p => p.hp + p.shield*0.6 + p.boost*0.5 + (p.forgeAtk?4:0) + (p.forgeDef?3:0) + (p.block?4:0) + fx(p) + (p.held?2:0) + p.regrow*2
+    + p.hand.length*0.8 - (p.tiredAtk?1.5:0) - (p.tiredDef?1.2:0);
   return f(s.players[pi]) - f(s.players[1-pi]);
 }
 function aiMove(s, pi, level){
-  const p = s.players[pi];
-  const moves = allMoves(p);
+  const moves = allMoves(s.players[pi]);
   if (level === 'easy'){
-    const combos = moves.filter(m => m.cards.length === 2);
-    if (combos.length && Math.random() < 0.35) return combos[rnd(combos.length)];
-    const singles = moves.filter(m => m.cards.length === 1); return singles[rnd(singles.length)];
+    const both = moves.filter(m => slotInfo(s.players[pi], m.atk) && slotInfo(s.players[pi], m.def));
+    return (both.length && Math.random() < 0.6 ? both : moves)[rnd((both.length && Math.random() < 0.6 ? both : moves).length)] || moves[0];
   }
-  if (level === 'hard') return hardMove(s, pi, moves);
-  const K = 10, noise = 4;
-  let best = moves[0], bestScore = -Infinity;
+  const o = s.players[1-pi], K = level === 'hard' ? 6 : 3, noise = level === 'hard' ? 0.3 : 2;
+  let samples;
+  if (level === 'hard') samples = allMoves(o).sort(() => Math.random() - .5).slice(0, K);           // Hard reads your actual hand
+  else samples = Array.from({ length:K }, () => { const sim = clone(s); sim.players[1-pi].hand = drawN(o.hand.length); const om = allMoves(sim.players[1-pi]); return { st:sim, mv:om[rnd(om.length)] }; });
+  let best = moves[0], bs = -Infinity;
   for (const m of moves){
-    let total = 0;
-    for (let k=0;k<K;k++){
-      const sim = clone(s); const o = sim.players[1-pi];
-      o.hand = drawN(o.hand.length);
-      const om = allMoves(o); const oMove = om[rnd(om.length)];
-      const mv = pi === 0 ? [m, oMove] : [oMove, m];
-      total += evaluate(resolve(sim, mv), pi);
+    let t = 0;
+    for (const x of samples){
+      const st = level === 'hard' ? s : x.st, om = level === 'hard' ? x : x.mv;
+      t += evaluate(resolve(st, pi === 0 ? [m, om] : [om, m]), pi);
     }
-    const score = total / K + (Math.random()-0.5) * noise;
-    if (score > bestScore){ bestScore = score; best = m; }
+    const sc = t / samples.length + (Math.random() - .5) * noise;
+    if (sc > bs){ bs = sc; best = m; }
   }
   return best;
 }
-// Hard reads the table: it plans against every move the opponent could make
-// with the cards it can see being played, mixing the average and worst case.
-function hardMove(s, pi, moves){
-  const o = s.players[1-pi], oMoves = allMoves(o);
-  let best = moves[0], bestScore = -Infinity;
-  for (const m of moves){
-    let total = 0, worst = Infinity;
-    for (const om of oMoves){
-      const mv = pi === 0 ? [m, om] : [om, m];
-      const v = evaluate(resolve(s, mv), pi); total += v; worst = Math.min(worst, v);
-    }
-    const score = 0.7 * total / oMoves.length + 0.3 * worst + Math.random() * 0.3;
-    if (score > bestScore){ bestScore = score; best = m; }
-  }
-  return best;
-}
-// The computer peeked with Meadow and has seen your card: pick the best answer to it.
+// The computer peeked with Meadow and has seen your cards: pick the best answer.
 function aiCounter(s, pi, theirMove, level){
   if (level === 'easy') return aiMove(s, pi, level);
-  const moves = allMoves(s.players[pi]), noise = level === 'hard' ? 0.2 : 1.5;
-  let best = moves[0], bestScore = -Infinity;
-  for (const m of moves){
-    const mv = pi === 0 ? [m, theirMove] : [theirMove, m];
-    const sc = evaluate(resolve(s, mv), pi) + (Math.random()-0.5) * noise;
-    if (sc > bestScore){ bestScore = sc; best = m; }
-  }
+  let best = null, bs = -Infinity;
+  for (const m of allMoves(s.players[pi])){ const sc = evaluate(resolve(s, pi === 0 ? [m, theirMove] : [theirMove, m]), pi) + Math.random()*0.3; if (sc > bs){ bs = sc; best = m; } }
   return best;
 }
-// Decide whether the computer tucks a card into its Hold slot this round.
 function aiHold(s, pi, mv, level){
-  const p = s.players[pi]; if (p.held && !mv.useHeld) return null;
-  const free = p.hand.map((e,i) => i).filter(i => !mv.cards.includes(i) && !p.hand[i].includes('+'));
+  const p = s.players[pi]; const usedHeld = (mv.atk && mv.atk.useHeld) || (mv.def && mv.def.useHeld);
+  if (p.held && !usedHeld) return null;
+  const busy = [...((mv.atk && mv.atk.cards) || []), ...((mv.def && mv.def.cards) || [])];
+  const free = p.hand.map((e,i) => i).filter(i => !busy.includes(i) && !p.hand[i].includes('+'));
   if (!free.length) return null;
   if (level === 'easy') return Math.random() < 0.25 ? { cards:[free[rnd(free.length)]] } : null;
   const want = p.hp >= 20 ? ['water','earth'] : ['fire','wind'];
   const pick = free.find(i => want.includes(p.hand[i]));
   return pick === undefined ? null : { cards:[pick] };
 }
-function aiRegrow(s, pi, level){
-  const p = s.players[pi], pile = s.discard; if (!p.regrow || !pile.length) return null;
-  if (level === 'easy') return pile[rnd(pile.length)];
-  const prio = p.hp < 15 ? ['water','earth','fire','wind','wood'] : ['fire','wind','earth','water','wood'];
-  return prio.find(e => pile.includes(e)) || pile[0];
+// The computer uses its one Discard all when its hand has no way to attack.
+function aiMaybeDiscard(s, pi, level){
+  const p = s.players[pi]; if (p.discardUsed || level === 'easy' || s.round < 2) return false;
+  const canAttack = allMoves(p).some(m => { const i = slotInfo(p, m.atk); return i && i.d.type === 'damage'; });
+  return !canAttack ? applyDiscardAll(s, pi) : false;
 }
 </script>
 <script>
@@ -922,7 +958,8 @@ function localController(mode, names, level){
       const e = aiRegrow(s,1,level); if (e) applyRegrow(s,1,e, s.players[1].hand.length >= HAND ? 0 : undefined);
       // The computer may use its own Meadow to see the card you locked in.
       const cp = s.players[1], m = findMeadow(cp);
-      if (level !== 'easy' && pending[0] && m && !cp.tired && !cp.peek && Math.random() < 0.6) applyPeek(s, 1, m);
+      if (level !== 'easy' && pending[0] && m && !cp.peek && Math.random() < 0.6) applyPeek(s, 1, m);
+      aiMaybeDiscard(s, 1, level);
       const mv = (s.players[1].peek && pending[0]) ? aiCounter(s,1,pending[0],level) : aiMove(s,1,level);
       mv.hold = aiHold(s,1,mv,level); pending[1] = mv; c.tryResolve();
     },
@@ -941,6 +978,8 @@ function localController(mode, names, level){
     },
     regrow(pi, el, idx){ if (!pending[pi] && !cdEnd && !reviewing && applyRegrow(s, pi, el, idx)) c.push(); },
     // 🌾 Meadow used as a free action. Against the computer, it locks in right away so you can see its card.
+    // 🗑️ Discard all: once per game, a fresh hand of 5 right away
+    discardAll(pi){ if (reviewing || cdEnd || pending[pi] || s.over || !applyDiscardAll(s, pi)) return; c.push(); },
     usePeek(pi, srcs){
       if (reviewing || cdEnd || pending[pi] || s.over || !applyPeek(s, pi, srcs)) return;
       if (mode === 'ai' && pi === 0 && !pending[1]){ clearTimeout(aiTimer); c.aiReady(); } else c.push();
@@ -948,12 +987,12 @@ function localController(mode, names, level){
     ack(pi){ if (!reviewing || acks[pi]) return; acks[pi] = true; if (acks[0] && acks[1]){ reviewing = false; acks = [false,false]; c.aiMaybeFirst(); } c.push(); },
     rematch(){ clearTimeout(cdTimer); clearTimeout(aiTimer); cdEnd = 0; reviewing = false; acks = [false,false]; s = newGame(names); pending = [null,null]; resetPicks(); c.push(); },
     attach(cn){ conn = cn; },
-    move(mv){ c.submit(0, mv); }, unreadyMe(){ c.unready(0); }, ackMe(){ c.ack(0); }, doRegrow(el, idx){ c.regrow(0, el, idx); }, doPeek(srcs){ c.usePeek(0, srcs); }
+    move(mv){ c.submit(0, mv); }, unreadyMe(){ c.unready(0); }, ackMe(){ c.ack(0); }, doRegrow(el, idx){ c.regrow(0, el, idx); }, doPeek(srcs){ c.usePeek(0, srcs); }, doDiscard(){ c.discardAll(0); }
   };
   return c;
 }
 function guestController(conn){
-  return { mode:'guest', move(mv){ conn.send({ type:'move', move:mv }); }, unreadyMe(){ conn.send({ type:'unready' }); }, ackMe(){ conn.send({ type:'ack' }); }, doRegrow(el, idx){ conn.send({ type:'regrow', el, idx }); }, doPeek(srcs){ conn.send({ type:'peek', srcs }); }, rematch(){ conn.send({ type:'rematch' }); } };
+  return { mode:'guest', move(mv){ conn.send({ type:'move', move:mv }); }, unreadyMe(){ conn.send({ type:'unready' }); }, ackMe(){ conn.send({ type:'ack' }); }, doRegrow(el, idx){ conn.send({ type:'regrow', el, idx }); }, doPeek(srcs){ conn.send({ type:'peek', srcs }); }, doDiscard(){ conn.send({ type:'discardall' }); }, rematch(){ conn.send({ type:'rematch' }); } };
 }
 
 // ---------- networking ----------
@@ -986,6 +1025,7 @@ function hostGame(){
       else if (msg.type === 'ack') ctrl.ack(1);
       else if (msg.type === 'regrow') ctrl.regrow(1, msg.el, msg.idx);
       else if (msg.type === 'peek') ctrl.usePeek(1, msg.srcs);
+      else if (msg.type === 'discardall') ctrl.discardAll(1);
       else if (msg.type === 'rematch') ctrl.rematch();
     });
     conn.on('close', () => disconnected());
@@ -1044,9 +1084,11 @@ function bars(p, who){
 // Small status badges; hover or long-press shows the full meaning.
 function chips(p){
   const c = [];
-  if (p.tired) c.push(['😮‍💨 Tired', 'Tired: single cards only this round']);
+  if (p.tiredAtk) c.push(['😮‍💨 Tired ⚔️', 'Tired: single cards only in the attack slot this round']);
+  if (p.tiredDef) c.push(['😮‍💨 Tired 🛡️', 'Tired: single cards only in the defense slot this round']);
   if (p.boost) c.push([`🌳 +${p.boost}`, `Next damage card +${p.boost}`]);
-  if (p.forge) c.push(['🔨 ×2', "Next card's numbers are doubled"]);
+  if (p.forgeAtk) c.push(['🔨 ×2 ⚔️', 'Your next attack card is doubled']);
+  if (p.forgeDef) c.push(['🔨 ×2 🛡️', 'Your next defense card is doubled']);
   if (p.weak) c.push([`🟤 −${p.weak}`, `Next card −${p.weak}`]);
   if (p.block) c.push(['🌪️ Guard', 'Blocks the next hit completely']);
   p.effects.forEach(e => c.push([`${e.kind==='dot' ? e.icon : e.kind==='hot' ? '💚' : '🧱'} ${e.kind==='sot' ? '+' : ''}${e.amt}×${e.left}`,
@@ -1065,14 +1107,14 @@ function howToHTML(){
   return `<section class="howto" aria-label="How to play">
     <h2>How to play</h2>
     <div class="steps">
-      ${step(1, 'Pick a card', `${tileHTML('fire')}${tileHTML('water')}${tileHTML('wood')}<span class="arrow">➜</span><span class="dashspot"></span>`, 'Drag a card from your hand into your spot in the middle of the board.')}
+      ${step(1, 'Attack & defend', `${tileHTML('fire')}<span class="arrow">➜</span><span class="dashspot small">⚔️</span>${tileHTML('earth')}<span class="arrow">➜</span><span class="dashspot small">🛡️</span>`, 'You have two spots: ⚔️ for attacks and 🛡️ for defense. Support cards fit either (one per round). Play one card or both!')}
       ${step(2, 'Merge for power', `${tileHTML('fire')}<span class="op">+</span>${tileHTML('water')}<span class="op">=</span>${tileHTML('fire+water')}`, 'Drop one card onto another to make a stronger combo.')}
       ${step(3, 'Press Ready', `<span class="fakebtn">Ready</span><span class="cd">3 · 2 · 1 ⚔️</span>`, 'Ready locks your card in. When both players are ready, the cards battle!')}
       ${step(4, 'Win the fight', `<span class="fakebars"><i class="h"></i><i class="s"></i></span><span class="op">⚡×1.5</span>`, 'Hits break the 🛡️ shield first, then ❤️ health. Knock them to 0, or have more health after 15 rounds. Rounds 11 to 15 hit ×1.5!')}
       ${step(5, 'Save & peek', `<span class="dashspot small">👖</span>${tileHTML('earth+wind')}`, 'Hold 1 single card for later. 🌾 Meadow (Earth + Wind) is free: drop it in your spot to see their hand and their card.')}
-      ${step(6, 'Watch out for Tired', `${tileHTML('wind')}<span class="op">😮‍💨</span>${tileHTML('water')}`, 'Wind, Mudslide, Root Quake & Tornado make them Tired (single cards only). Water, Campfire, Garden & Great Tree block it.')}
+      ${step(6, 'Watch out for Tired', `${tileHTML('wind')}<span class="op">😮‍💨</span>${tileHTML('water')}`, 'Wind & Root Quake tire their ⚔️ spot, Mudslide & Tornado their 🛡️ spot (single cards only there). Water, Campfire, Garden, Great Tree & Rain block it.')}
     </div>
-    <p class="howto-foot">Both players draw from one shared deck of 30 cards. 📱 On a phone, turn it sideways to play.</p>
+    <p class="howto-foot">Each round you draw up to 2 new cards, or a fresh 5 if your hand is empty. Once per game you can swap your whole hand for 5 new cards. Rounds 11 to 15: attacks hit ×1.5 and the arena crumbles! Both players share one deck of 30 cards. 📱 On a phone, turn it sideways.</p>
   </section>`;
 }
 
@@ -1131,7 +1173,7 @@ function showGame(v){
 // ---------- picking cards: drag and drop, with tapping as a backup ----------
 // An "item" is one card or a merged pair. Ids: "3" = hand card 3, "H" = the held card, "0+3" = hand cards 0 and 3 merged.
 let ui;
-function resetPicks(){ ui = { merges:[], play:null, hold:null, picked:null, msg:'', unheld:false }; }
+function resetPicks(){ ui = { merges:[], slots:{ atk:null, def:null }, hold:null, picked:null, msg:'', unheld:false, confirmDiscard:false }; }
 resetPicks();
 const srcOf = id => id.split('+').map(x => x === 'H' ? 'H' : +x);
 const idOf = srcs => srcs.map(String).join('+');
@@ -1140,13 +1182,14 @@ const itemEls = (you, id) => isDiscard(id) ? [id.slice(2)] : srcOf(id).flatMap(x
 const itemKey = (you, id) => keyOf(itemEls(you, id));
 function handItems(you){
   const inPair = new Set(ui.merges.flat().map(String)), out = [];
-  const placed = id => id === ui.play || id === ui.hold;
+  const placed = id => id === ui.slots.atk || id === ui.slots.def || id === ui.hold;
   you.hand.forEach((_,i) => { if (!inPair.has(String(i)) && !placed(String(i))) out.push(String(i)); });
   ui.merges.forEach(m => { const id = idOf(m); if (!placed(id)) out.push(id); });
   if (ui.unheld && you.held && !inPair.has('H') && !placed('H')) out.push('H');   // the held card, brought back into your hand
   return out;
 }
-function unplace(id){ if (ui.play === id) ui.play = null; if (ui.hold === id) ui.hold = null; }
+const playedIds = () => [ui.slots.atk, ui.slots.def].filter(Boolean);
+function unplace(id){ if (ui.slots.atk === id) ui.slots.atk = null; if (ui.slots.def === id) ui.slots.def = null; if (ui.hold === id) ui.hold = null; }
 function mergeItems(you, a, b){
   if (a === b || a.includes('+') || b.includes('+') || itemEls(you,a).length > 1 || itemEls(you,b).length > 1) return 'Only two single cards can merge.';
   if (a === 'H' || b === 'H'){ if (you.held.els.length !== 1) return 'A held combo cannot merge again.'; }
@@ -1156,12 +1199,22 @@ function mergeItems(you, a, b){
   return '';
 }
 function splitItem(id){
-  if (id.includes('H') ? ui.unheld && handItems(view.you).length >= HAND : handItems(view.you).length >= HAND && !(ui.play === id || ui.hold === id))
+  if (id.includes('H') ? ui.unheld && handItems(view.you).length >= HAND : handItems(view.you).length >= HAND && !(playedIds().includes(id) || ui.hold === id))
     { ui.msg = 'Your hand is full (5 cards), so this combo can’t be split right now.'; return; }
   unplace(id); ui.merges = ui.merges.filter(m => idOf(m) !== id); if (ui.picked === id) ui.picked = null; }
-function canPlayItem(you, id){ const n = itemEls(you, id).length; return n === 1 || !you.tired; }
+// Can this item go in that slot? Returns '' if yes, or a friendly reason if not.
+function slotProblem(you, id, slot){
+  const els = itemEls(you, id), key = keyOf(els), d = CARDS[key];
+  if (key === MEADOW) return '';
+  if (!slotFits(slot, d)) return slot === 'atk' ? `${d.name} is a ${TYPE[d.type].label} card, so it goes in your 🛡️ slot.` : `${d.name} is an attack, so it goes in your ⚔️ slot.`;
+  if (els.length === 2 && slotTired(you, slot)) return `You're Tired ${slot === 'atk' ? '⚔️' : '🛡️'}: only single cards in that slot this round.`;
+  const other = ui.slots[slot === 'atk' ? 'def' : 'atk'];
+  if (d.type === 'support' && other && other !== id && CARDS[itemKey(you, other)].type === 'support') return 'Only one Support card per round.';
+  return '';
+}
+const canPlayItem = (you, id) => ['atk','def'].some(sl => !slotProblem(you, id, sl));
 // The Hold slot is free if it's empty, or if its card is being played or merged this round.
-function heldInUse(){ return ui.unheld || (ui.play && ui.play.includes('H')) || ui.merges.some(m => m.includes('H')); }
+function heldInUse(){ return ui.unheld || playedIds().some(x => x.includes('H')) || ui.merges.some(m => m.includes('H')); }
 function slotFree(you){ return !you.held || heldInUse(); }
 function canHoldItem(you, id){
   if (isDiscard(id)) return false;
@@ -1169,13 +1222,12 @@ function canHoldItem(you, id){
   return itemEls(you, id).length === 1;                     // single cards only; a full slot swaps its card back to your hand
 }
 function placeItem(you, id, zone){
-  if (zone === 'play'){
-    if (!canPlayItem(you, id)) return "You're tired, so combos can't be played this round. Try holding it instead!";
-    if (ui.hold && id.includes('H')) {}
-    unplace(id); ui.play = id;
+  if (zone === 'atk' || zone === 'def'){
+    const why = slotProblem(you, id, zone); if (why) return why;
+    unplace(id); ui.slots[zone] = id;
   } else if (zone === 'hold'){
     if (id === 'H'){                                        // held card goes back into the slot; anything staged there returns to your hand
-      if (!ui.unheld && !(ui.play === 'H')) return '';
+      if (!ui.unheld && !playedIds().includes('H')) return '';
       unplace('H'); if (ui.hold) ui.hold = null; ui.unheld = false; ui.picked = null; return '';
     }
     if (!canHoldItem(you, id)) return 'The Hold slot only fits single cards, not combos.';
@@ -1186,23 +1238,22 @@ function placeItem(you, id, zone){
 }
 const isMeadow = (you, id) => !isDiscard(id) && itemKey(you, id) === MEADOW;
 function useMeadow(you, id){
-  if (you.tired) return "You're Tired, so you can't use Meadow this round.";
   if (you.peek) return 'You already used Meadow this round.';
   const srcs = srcOf(id); resetPicks(); ctrl.doPeek(srcs);
   ui.msg = '🌾 Meadow used! Their hand is face-up above. Now play your card.';
   return null;
 }
 function buildMove(){
-  const you = view.you, p = ui.play ? srcOf(ui.play) : [];
+  const part = id => { const x = id ? srcOf(id) : []; return { cards: x.filter(v => v !== 'H'), useHeld: x.includes('H') }; };
   const h = ui.hold ? srcOf(ui.hold) : null;
-  const merges = ui.merges.filter(m => { const id = idOf(m); return id !== ui.play && id !== ui.hold; });   // merged but not played: kept in hand
-  const hUsed = p.includes('H') || (h && h.includes('H')) || merges.some(m => m.includes('H'));
-  return { cards: p.filter(x => x !== 'H'), useHeld: p.includes('H'), hold: h ? { cards: h.filter(x => x !== 'H'), useHeld: h.includes('H') } : null,
+  const merges = ui.merges.filter(m => { const id = idOf(m); return !playedIds().includes(id) && id !== ui.hold; });   // merged but not played: kept in hand
+  const hUsed = playedIds().some(x => x.includes('H')) || (h && h.includes('H')) || merges.some(m => m.includes('H'));
+  return { atk: part(ui.slots.atk), def: part(ui.slots.def), hold: h ? { cards: h.filter(x => x !== 'H'), useHeld: false } : null,
     merges, unhold: !!(ui.unheld && !ui.hold && !hUsed) };
 }
 function itemCard(you, id, cls='', extra=''){
   const els = itemEls(you, id), k = keyOf(els), merged = id.includes('+');
-  if (you.tired && els.length === 2 && !view.reviewing) cls += ' tiredcard';
+  if (els.length === 2 && !view.reviewing && !isMeadow(you, id) && !canPlayItem(you, id) && (you.tiredAtk || you.tiredDef)) cls += ' tiredcard';
   const split = merged && !view.youLocked && !view.reviewing ? `<span class="split" data-act="split" data-id="${id}" role="button" tabindex="0" aria-label="Split ${CARDS[k].name}">✕</span>` : '';
   const heldTag = id.includes('H') ? '<span class="tagH">👖</span>' : '';
   return cardFace(k, els, `${cls} ${ui.picked===id?'sel':''}`, !view.youLocked, `data-drag="${id}" data-act="pickitem" data-id="${id}" aria-pressed="${ui.picked===id}" ${view.youLocked?'disabled':''} ${extra}`).replace('</button>', `${split}${heldTag}</button>`);
@@ -1228,7 +1279,7 @@ function playFx(q){
   });
 }
 // Sort this round's effects into "what each player did", so each side can show its own summary.
-const SELF_STATUS = /Guard|Regen|wall|power|×2|Peek|Regrow|Mirror|Cancelled|Blocked|Not tired/;
+const SELF_STATUS = /Guard|Regen|wall|power|×2|Peek|Regrow|Cleansed|Blocked|Not tired/;
 // Compact icons for one round in the history column: what this player's card did.
 function shortSummary(fx, who){
   const other = who === 'you' ? 'opp' : 'you', icon = l => l.split(' ').filter(t => !/^[A-Za-z!]+$/.test(t)).join('');
@@ -1263,7 +1314,8 @@ function sideSummary(fx, who){
 function resultsHTML(v, stay){
   if (!v.last || (!stay && !v.reviewing)) return '';
   const anim = revealAnim, fx = v.last.fx || [];
-  const card = (c, side, who) => `<div class="rcard rc-${side} ${anim ? 'clash-' + side : ''}"><div class="rwho">${who}</div>${cardFace(c.key, c.els, 'mid' + (anim ? ' flip' : ''))}${c.fromHeld ? '<div class="note">👖 held</div>' : ''}${c.eff && c.eff !== c.key ? `<div class="note">🌧️ copied ${CARDS[c.eff].name}</div>` : ''}</div>`;
+  const one = c => c ? cardFace(c.key, c.els, 'mid' + (anim ? ' flip' : '')) + (c.fromHeld ? '<div class="note">👖 held</div>' : '') : '<div class="rnone">—</div>';
+  const card = (c, side, who) => `<div class="rcard rc-${side} ${anim ? 'clash-' + side : ''}"><div class="rwho">${who}</div><div class="rpair">${one(c.atk)}${one(c.def)}</div></div>`;
   const list = who => `<ul class="rlist">${sideSummary(fx, who).map(t => `<li>${esc(t)}</li>`).join('')}</ul>`;
   return `<div class="results ${stay ? 'stay' : ''}" aria-live="polite">
     <div class="rtitle">Round ${v.last.round} results${isPowerRound(v.last.round) ? ' ⚡' : ''}</div>
@@ -1284,18 +1336,26 @@ function arenaHTML(v){
   if (!v.over && v.power) h += `<div class="powerflag">⚡ Power round: cards hit ×1.5</div>`;
   else if (!v.over && v.round === POWER_FROM - 1) h += `<div class="powerflag soon">⚡ Power rounds start next round</div>`;
   if (!v.over){
-    const oppSlot = v.oppLocked && v.oppCard ? `<div class="peeked">${cardFace(v.oppCard.key, v.oppCard.els, 'big')}<div class="peekedtag">🌾 Peeked!</div></div>`
-      : v.oppLocked ? backHTML('') : `<div class="empty">Thinking…${opp.hand ? '<br><small>🌾 Their card shows here when they press Ready</small>' : ''}</div>`;
-    let mySlot;
-    if (v.youLocked && ui.play) mySlot = `<div class="readycard">${itemCard(you, ui.play, 'big', 'disabled')}</div>`;
-    else if (v.youLocked) mySlot = backHTML('');
-    else if (ui.play) mySlot = itemCard(you, ui.play, 'big', 'data-dropzone="play"');
-    else mySlot = `<button class="empty dropzone" data-dropzone="play" data-act="zone" data-zone="play">Drag a card here</button>`;
-    const tiredTag = (p, mine) => p.tired && !v.reviewing ? `<div class="tiredtag" role="status">😮‍💨 Tired<br><small>${mine ? 'Single cards only' : 'Single card this round'}</small></div>` : '';
+    const label = { atk:'⚔️ Attack', def:'🛡️ Defense' };
+    const tiredTag = (p, slot) => slotTired(p, slot) && !v.reviewing ? `<div class="tiredtag" role="status">😮‍💨 Tired<br><small>Singles only</small></div>` : '';
+    const oppSpot = slot => {
+      let inner;
+      if (v.oppLocked && v.oppCards){ const c = v.oppCards[slot]; inner = c ? `<div class="peeked">${cardFace(c.key, c.els, 'big')}<div class="peekedtag">🌾 Peeked!</div></div>` : `<div class="empty faint">Empty</div>`; }
+      else if (v.oppLocked) inner = backHTML('');
+      else inner = `<div class="empty">${slot === 'atk' ? 'Thinking…' : ''}</div>`;
+      return `<div class="slot"><div class="who">${label[slot]}</div>${inner}${tiredTag(opp, slot)}</div>`;
+    };
+    const mySpot = slot => {
+      const id = ui.slots[slot]; let inner;
+      if (v.youLocked) inner = id ? `<div class="readycard">${itemCard(you, id, 'big', 'disabled')}</div>` : `<div class="empty faint">Empty</div>`;
+      else if (id) inner = itemCard(you, id, 'big', `data-dropzone="${slot}"`);
+      else inner = `<button class="empty dropzone" data-dropzone="${slot}" data-act="zone" data-zone="${slot}">${slot === 'atk' ? '⚔️<br>Attack' : '🛡️<br>Defend<br><small>or Support</small>'}</button>`;
+      return `<div class="slot" data-dropzone="${slot}"><div class="who">${label[slot]}</div>${inner}${v.youLocked ? '' : tiredTag(you, slot)}</div>`;
+    };
     h += `<div class="slotwrap"><div class="slots">
-        <div class="slot"><div class="who">${esc(opp.name)}</div>${oppSlot}${tiredTag(opp, false)}</div>
+        <div class="side-pair"><div class="pairname">${esc(opp.name)}</div><div class="pair">${oppSpot('atk')}${oppSpot('def')}</div></div>
         <div class="vs">vs</div>
-        <div class="slot" data-dropzone="play"><div class="who">You</div>${mySlot}${v.youLocked ? '' : tiredTag(you, true)}</div>
+        <div class="side-pair"><div class="pairname">You</div><div class="pair">${mySpot('atk')}${mySpot('def')}</div></div>
       </div>${resultsHTML(v)}</div>${buttonsHTML(v)}`;
     if (v.countdown > 0){
       const elapsed = 3000 - Math.max(0, cdEndLocal - Date.now());
@@ -1317,7 +1377,7 @@ function buttonsHTML(v){
     oppB = `<div class="statusbtn ${v.oppLocked ? 'on' : 'thinking'}" role="status">${v.oppLocked ? '✅ Ready!' : '🤔 Thinking<span class="dots"></span>'}</div>`;
     if (v.countdown > 0) myB = `<div class="statusbtn on">✅ Ready!</div>`;
     else if (v.youLocked) myB = `<div class="statusbtn on">✅ Ready!</div><div class="tiny">Locked in</div>`;
-    else { const ok = !!ui.play && validMove(v.you, buildMove()); myB = `<button class="btn gold readybtn" data-act="ready" ${ok ? '' : 'disabled'}>Ready</button>`; }
+    else { const ok = playedIds().length > 0 && validMove(v.you, buildMove()); myB = `<button class="btn gold readybtn" data-act="ready" ${ok ? '' : 'disabled'}>Ready</button>`; }
   }
   return `<div class="readyrow"><div class="rb">${oppB}</div><div class="rbgap"></div><div class="rb">${myB}</div></div>`;
 }
@@ -1325,10 +1385,12 @@ function buttonsHTML(v){
 // Right side: what happened each round, newest on top.
 function historyHTML(v){
   const opp = v.opp;
-  const rows = v.history.slice().reverse().map(x => `<div class="hrow" title="Round ${x.round}: ${esc(opp.name)} played ${CARDS[x.opp.key].name}, you played ${CARDS[x.you.key].name}">
+  const names = c => [c.atk, c.def].filter(Boolean).map(k => CARDS[k.key].name).join(' + ') || 'nothing';
+  const tiles = (c, who) => [c.atk, c.def].filter(Boolean).map(k => tileHTML(k.key, '')).join('') || '<span class="hn">—</span>';
+  const rows = v.history.slice().reverse().map(x => `<div class="hrow" title="Round ${x.round}: ${esc(opp.name)} played ${names(x.opp)}, you played ${names(x.you)}">
       <div class="hnum">R${x.round}${isPowerRound(x.round) ? '⚡' : ''}</div>
-      <div class="hside">${tileHTML(x.opp.key, 'Them')}<div class="hres">${shortSummary(x.fx || [], 'opp')}</div></div>
-      <div class="hside">${tileHTML(x.you.key, 'You')}<div class="hres">${shortSummary(x.fx || [], 'you')}</div></div>
+      <div class="hside"><div class="htiles">${tiles(x.opp)}</div><div class="hwho">Them</div><div class="hres">${shortSummary(x.fx || [], 'opp')}</div></div>
+      <div class="hside"><div class="htiles">${tiles(x.you)}</div><div class="hwho">You</div><div class="hres">${shortSummary(x.fx || [], 'you')}</div></div>
     </div>`).join('');
   return `<aside class="side right historycol"><div class="sidelabel">📜 Rounds</div><div class="hlist">${rows || '<div class="hempty">Each round will show up here.</div>'}</div></aside>`;
 }
@@ -1364,8 +1426,11 @@ function helperHTML(you){
   const els = itemEls(you, id), k = keyOf(els), d = CARDS[k];
   let h = `<div class="preview"><span class="pic">${d.icon}</span><div><div class="tt">${d.name} <span class="t-${d.type}">${TYPE[d.type].icon} ${TYPE[d.type].label}${els.length===2?' combo':''}</span></div><div class="ds">${describe(d)}.</div></div></div>`;
   const acts = [];
-  if (isMeadow(you, id)) acts.push(`<button class="btn gold" data-act="place" data-zone="play" ${you.tired || you.peek ? 'disabled' : ''}>🌾 Use Meadow (free)</button>`);
-  else if (canPlayItem(you, id)) acts.push(`<button class="btn" data-act="place" data-zone="play">▶ Play it</button>`);
+  if (isMeadow(you, id)) acts.push(`<button class="btn gold" data-act="place" data-zone="atk" ${you.peek ? 'disabled' : ''}>🌾 Use Meadow (free)</button>`);
+  else {
+    if (!slotProblem(you, id, 'atk')) acts.push(`<button class="btn" data-act="place" data-zone="atk">⚔️ Attack slot</button>`);
+    if (!slotProblem(you, id, 'def')) acts.push(`<button class="btn" data-act="place" data-zone="def">🛡️ Defense slot</button>`);
+  }
   if (canHoldItem(you, id)) acts.push(`<button class="btn alt" data-act="place" data-zone="hold">👖 Hold it</button>`);
   acts.push(`<button class="btn alt" data-act="unpick">Close</button>`);
   h += `<div class="row acts">${acts.join('')}</div>`;
@@ -1403,9 +1468,9 @@ function renderGame(){
   // bottom: you
   const items = frozen ? [] : handItems(you);
   const count = frozen ? you.hand.length : items.length;
-  const hint = v.over ? '' : v.reviewing ? 'Check the results, then press Continue.' : v.countdown > 0 ? 'Get ready…' : v.youLocked ? 'Locked in!' : you.tired ? '😮‍💨 Tired: single cards only' : 'Drop a card on another to merge';
+  const hint = v.over ? '' : v.reviewing ? 'Check the results, then press Continue.' : v.countdown > 0 ? 'Get ready…' : v.youLocked ? 'Locked in!' : (you.tiredAtk || you.tiredDef) ? '😮‍💨 Tired: singles only in that slot' : 'Drop a card on another to merge';
   h += `<footer class="tbar me-bar">
-    <div class="me-info"><div class="who" id="nm-you">${you.name === 'You' ? 'You' : esc(you.name)}</div>${bars(you,'you')}${chips(you)}<div class="count">${hint} <b>(${count}/${HAND} cards)</b></div></div>
+    <div class="me-info"><div class="who" id="nm-you">${you.name === 'You' ? 'You' : esc(you.name)}</div>${bars(you,'you')}${chips(you)}<div class="count">${hint} <b>(${count}/${HAND} cards)</b></div>${!frozen && !you.discardUsed ? `<button class="minibtn" data-act="discardall" title="Once per game: throw away your hand and draw 5 new cards">${ui.confirmDiscard ? '🗑️ Tap again to confirm' : '🗑️ New hand (once)'}</button>` : ''}</div>
     <div class="hand dropzone-hand" data-dropzone="hand">${frozen ? you.hand.map(e => cardFace(e, cardEls(e))).join('') : items.map(id => itemCard(you, id, '', id.includes('+') ? '' : `data-dropzone="item" data-target="${id}"`)).join('')}</div>
     ${v.over ? '' : pocketHTML(v)}
   </footer>`;
@@ -1418,7 +1483,7 @@ function renderGame(){
       <div class="row" style="margin-top:6px">${uniq.map(e => cardFace(e,[e],'mini ' + (ui.picked === 'D:'+e ? 'sel' : ''),true,`data-drag="D:${e}" data-act="pickitem" data-id="D:${e}" aria-label="${EL[e].name} from the discard pile"`)).join('')}</div>
       ${ui.picked && isDiscard(ui.picked) ? `<div class="gardeninfo">${helperHTML(you)}</div>` : ''}</div>`;
   }
-  if (!frozen && ui.picked && !isDiscard(ui.picked)) h += `<div class="popover helperpop">${helperHTML(you)}</div>`;
+  if (!frozen && ui.picked && !isDiscard(ui.picked)) h += `<div class="popover helperpop anchored" style="visibility:hidden">${helperHTML(you)}</div>`;
   if (ui.msg) h += `<div class="flash toast" role="status">${esc(ui.msg)}</div>`;
   if (v.disconnected) h += `<div class="flash toast">Your opponent disconnected. Press ✕ to go back to the menu.</div>`;
   if (v.over){
@@ -1435,7 +1500,33 @@ function renderGame(){
   h += `<div class="rotate" role="alert"><div class="rotbox"><div class="rotic">📱↻</div><b>Please turn your phone sideways</b><p>Elemental Battle is played in landscape.</p></div></div>`;
   h += `</div>`;
   $app.innerHTML = h;
+  placeHint();
 }
+// Put the card hint just above the card you tapped, sliding it sideways if it would cover the Ready button.
+function placeHint(){
+  const pop = document.querySelector('.helperpop.anchored'); if (!pop) return;
+  const card = document.querySelector(`.board [data-act="pickitem"][data-id="${ui.picked}"]`);
+  const board = document.querySelector('.board').getBoundingClientRect();
+  if (!card){ pop.classList.remove('anchored'); pop.style.visibility = ''; return; }
+  const c = card.getBoundingClientRect(), w = pop.offsetWidth, gap = 8;
+  pop.style.maxHeight = Math.max(120, c.top - board.top - 56) + 'px';
+  const hgt = Math.min(pop.scrollHeight, parseFloat(pop.style.maxHeight));
+  let left = c.left + c.width / 2 - w / 2;
+  left = Math.max(board.left + 8, Math.min(left, board.right - w - 8));
+  const top = c.top - hgt - gap;
+  const ready = document.querySelector('.readyrow .rb:last-child');
+  if (ready){
+    const r = ready.getBoundingClientRect();
+    const overlaps = !(left + w < r.left || left > r.right || top + hgt < r.top || top > r.bottom);
+    if (overlaps){
+      const toLeft = r.left - gap - w, toRight = r.right + gap;
+      if (toLeft >= board.left + 8) left = toLeft; else if (toRight + w <= board.right - 8) left = toRight;
+    }
+  }
+  pop.style.left = (left - board.left) + 'px'; pop.style.top = (top - board.top) + 'px';
+  pop.style.visibility = '';
+}
+window.addEventListener('resize', () => { if (screen === 'game') placeHint(); });
 let toastText = '';
 function render(){
   document.body.classList.toggle('ingame', screen === 'game' && !!view);
@@ -1474,19 +1565,23 @@ document.addEventListener('click', e => {
   else if (act === 'pickitem'){
     const id = b.dataset.id;
     if (isDiscard(id)){ ui.picked = ui.picked === id ? null : id; render(); return; }
-    if (id === ui.play || id === ui.hold){ unplace(id); ui.picked = id; }
+    if (playedIds().includes(id) || id === ui.hold){ unplace(id); ui.picked = id; }
     else ui.picked = ui.picked === id ? null : id;
   }
   else if (act === 'mergewith'){ ui.msg = mergeItems(you, ui.picked, b.dataset.id); }
   else if (act === 'place' || act === 'zone'){
-    if (ui.picked && b.dataset.zone === 'play' && isMeadow(you, ui.picked)){ const m = useMeadow(you, ui.picked); if (m) ui.msg = m; }
+    if (ui.picked && (b.dataset.zone === 'atk' || b.dataset.zone === 'def') && isMeadow(you, ui.picked)){ const m = useMeadow(you, ui.picked); if (m) ui.msg = m; }
     else if (ui.picked) ui.msg = placeItem(you, ui.picked, b.dataset.zone);
   }
   else if (act === 'unpick') ui.picked = null;
+  else if (act === 'discardall'){
+    if (!ui.confirmDiscard){ ui.confirmDiscard = true; ui.msg = '🗑️ Tap again to throw away your whole hand and draw 5 new cards (once per game).'; }
+    else { resetPicks(); ctrl.doDiscard(); return; }
+  }
   else if (act === 'ready'){
     if (view.countdown > 0) return;
     if (view.youLocked) return;                    // Ready is final
-    const mv = buildMove(); if (ui.play && validMove(you, mv)) ctrl.move(mv); return;
+    const mv = buildMove(); if (playedIds().length && validMove(you, mv)) ctrl.move(mv); return;
   }
   render();
 });
@@ -1561,8 +1656,8 @@ function endDrag(e){
   }
   if (t){
     const z = t.dataset.dropzone;
-    if (z === 'play' && isMeadow(you, d.id)){ const m = useMeadow(you, d.id); if (m) ui.msg = m; }
-    else if (z === 'play' || z === 'hold') ui.msg = placeItem(you, d.id, z);
+    if ((z === 'atk' || z === 'def') && isMeadow(you, d.id)){ const m = useMeadow(you, d.id); if (m) ui.msg = m; }
+    else if (z === 'atk' || z === 'def' || z === 'hold') ui.msg = placeItem(you, d.id, z);
     else if (z === 'item') ui.msg = mergeItems(you, d.id, t.dataset.target);
     else if (z === 'hand'){
       if (d.id === 'H' && !ui.unheld){
